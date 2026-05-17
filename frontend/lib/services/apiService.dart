@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // Use 10.0.2.2 for Android emulator, or localhost/127.0.0.1 for Web/Windows
-  static const String baseUrl = 'http://172.22.25.191:3000';
+  static const String baseUrl = 'http://192.168.2.102:3000';
 
   static Future<Map<String, String>> _headers() async {
     final token = await getToken();
