@@ -304,10 +304,25 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildMallCard(dynamic mall) {
     final imageUrl = ApiService.getImageUrl(mall['image_url']);
     
-    return Container(
-      width: 300,
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      child: Card(
+    return GestureDetector(
+      onTap: () {
+        final mallId = mall['mall_id']?.toString();
+        
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MainScreen(
+              role: widget.role,
+              initialTab: 1, // Filtering screen
+              initialMallId: mallId,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        width: 300,
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        child: Card(
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 8,
@@ -362,7 +377,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildDiscountCard(dynamic discount) {

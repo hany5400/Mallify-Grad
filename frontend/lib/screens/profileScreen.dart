@@ -112,6 +112,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
+        leadingWidth: 160,
+        leading: Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: planType == 'free'
+              ? GestureDetector(
+                  onTap: _showSubscriptionPopup,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF3B82F6).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.3)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(Icons.workspace_premium_rounded, color: Color(0xFF3B82F6), size: 14),
+                        SizedBox(width: 4),
+                        Text('Upgrade Plan', style: TextStyle(color: Color(0xFF3B82F6), fontWeight: FontWeight.w900, fontSize: 10, letterSpacing: 0.2)),
+                      ],
+                    ),
+                  ),
+                )
+              : Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF59E0B).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFFF59E0B).withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.verified_rounded, color: Color(0xFFF59E0B), size: 14),
+                      SizedBox(width: 4),
+                      Text('PRO PLAN', style: TextStyle(color: Color(0xFFF59E0B), fontWeight: FontWeight.w900, fontSize: 10, letterSpacing: 0.2)),
+                    ],
+                  ),
+                ),
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Color(0xFFEF4444)),
@@ -244,52 +287,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: const [
-                              Icon(Icons.history, size: 22, color: Color(0xFF0F172A)),
-                              SizedBox(width: 8),
-                              Text('History', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
-                            ],
-                          ),
-                          if (planType == 'free')
-                            GestureDetector(
-                              onTap: _showSubscriptionPopup,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF3B82F6).withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.3)),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: const [
-                                    Icon(Icons.workspace_premium_rounded, color: Color(0xFF3B82F6), size: 14),
-                                    SizedBox(width: 6),
-                                    Text('Upgrade Your Plan', style: TextStyle(color: Color(0xFF3B82F6), fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.5)),
-                                  ],
-                                ),
-                              ),
-                            )
-                          else
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF59E0B).withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: const Color(0xFFF59E0B).withOpacity(0.3)),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: const [
-                                  Icon(Icons.verified_rounded, color: Color(0xFFF59E0B), size: 14),
-                                  SizedBox(width: 6),
-                                  Text('PRO PLAN', style: TextStyle(color: Color(0xFFF59E0B), fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.5)),
-                                ],
-                              ),
-                            ),
+                        children: const [
+                          Icon(Icons.history, size: 22, color: Color(0xFF0F172A)),
+                          SizedBox(width: 8),
+                          Text('History', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
                         ],
                       ),
                       const SizedBox(height: 16),
