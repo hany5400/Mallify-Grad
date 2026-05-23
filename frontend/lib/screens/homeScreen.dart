@@ -4,6 +4,7 @@ import 'authScreen.dart';
 import 'profileScreen.dart';
 import 'filteringScreen.dart';
 import 'main_screen.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   final String role;
@@ -137,21 +138,20 @@ class _HomeScreenState extends State<HomeScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF0F7FF),
+                                color: const Color(0xFFF7FEE7),
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: const Color(0xFFE2E8F0)),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  _HexStarBadge(),
-                                  const SizedBox(width: 8),
+                                  const Icon(Icons.stars_rounded, color: Color(0xFF65A30D), size: 18),
+                                  const SizedBox(width: 6),
                                   Text(
                                     '$_userPoints pts',
                                     style: const TextStyle(
                                       fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                      color: Color(0xFF3B82F6),
+                                      fontWeight: FontWeight.w900,
+                                      color: Color(0xFF65A30D),
                                     ),
                                   ),
                                 ],
@@ -529,7 +529,7 @@ class _HomeScreenState extends State<HomeScreen> {
     bool isExpanded = _expandedIndices.contains(displayIndex);
     
     String dateStr = req['published_at'] != null 
-      ? DateTime.parse(req['published_at'].toString()).toString().split(' ')[0] 
+      ? DateFormat('MMM d, yyyy').format(DateTime.parse(req['published_at'].toString()))
       : 'Recently';
 
     return Container(
@@ -651,52 +651,4 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-}
-
-/// Small blue hexagon with white star (points badge), matching app accent.
-class _HexStarBadge extends StatelessWidget {
-  const _HexStarBadge({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 22,
-      height: 22,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          CustomPaint(
-            size: const Size(22, 22),
-            painter: _HexagonFillPainter(color: Color(0xFF4A90E2)),
-          ),
-          const Icon(Icons.star_rounded, size: 11, color: Colors.white),
-        ],
-      ),
-    );
-  }
-}
-
-class _HexagonFillPainter extends CustomPainter {
-  _HexagonFillPainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-    final path = Path()
-      ..moveTo(w / 2, 0)
-      ..lineTo(w, h * 0.25)
-      ..lineTo(w, h * 0.75)
-      ..lineTo(w / 2, h)
-      ..lineTo(0, h * 0.75)
-      ..lineTo(0, h * 0.25)
-      ..close();
-    canvas.drawPath(path, Paint()..color = color);
-  }
-
-  @override
-  bool shouldRepaint(covariant _HexagonFillPainter oldDelegate) =>
-      oldDelegate.color != color;
 }

@@ -5,6 +5,7 @@ import 'editProfileScreen.dart';
 import 'authScreen.dart';
 import 'paymentScreen.dart';
 import 'dart:ui';
+import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -364,7 +365,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     
     // Format date if available, or use current as placeholder
     String dateStr = req['published_at'] != null 
-      ? DateTime.parse(req['published_at'].toString()).toString().split(' ')[0] 
+      ? DateFormat('MMM d, yyyy').format(DateTime.parse(req['published_at'].toString()))
       : 'Recently';
 
     return Container(
