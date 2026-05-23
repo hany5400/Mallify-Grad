@@ -234,13 +234,13 @@ class _AlternativesScreenState extends State<AlternativesScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: index == 0 ? const Color(0xFFE0F2FE) : const Color(0xFFF0FDF4),
+                    color: const Color(0xFFE0F2FE),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     'Item ${index + 1}',
-                    style: TextStyle(
-                      color: index == 0 ? const Color(0xFF0284C7) : const Color(0xFF166534), 
+                    style: const TextStyle(
+                      color: Color(0xFF0284C7), 
                       fontSize: 12, 
                       fontWeight: FontWeight.bold
                     ),
