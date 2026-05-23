@@ -363,8 +363,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     bool isExpanded = _expandedIndices.contains(displayIndex);
     
     // Format date if available, or use current as placeholder
-    String dateStr = req['created_at'] != null 
-      ? DateTime.parse(req['created_at'].toString()).toString().split(' ')[0] 
+    String dateStr = req['published_at'] != null 
+      ? DateTime.parse(req['published_at'].toString()).toString().split(' ')[0] 
       : 'Recently';
 
     return Container(
@@ -438,15 +438,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: item['image_url'] != null
+            child: (item['category_image'] != null && item['category_image'].toString().isNotEmpty)
               ? ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: Image.network(
-                    ApiService.getImageUrl(item['image_url'].toString()),
+                    ApiService.getImageUrl(item['category_image'].toString()),
                     fit: BoxFit.cover,
                   ),
                 )
-              : const Icon(Icons.shopping_bag_outlined, size: 24, color: Color(0xFF94A3B8)),
+              : (item['product_image'] != null && item['product_image'].toString().isNotEmpty)
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        ApiService.getImageUrl(item['product_image'].toString()),
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : const Icon(Icons.shopping_bag_outlined, size: 24, color: Color(0xFF94A3B8)),
           ),
           const SizedBox(width: 12),
           // Details

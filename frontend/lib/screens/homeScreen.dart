@@ -7,8 +7,15 @@ import 'main_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String role;
-  
-  const HomeScreen({Key? key, required this.role}) : super(key: key);
+  final VoidCallback? onOpenNotifications;
+  final VoidCallback? onOpenFilter;
+
+  const HomeScreen({
+    Key? key,
+    required this.role,
+    this.onOpenNotifications,
+    this.onOpenFilter,
+  }) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -17,7 +24,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<dynamic> _malls = [];
   List<dynamic> _discounts = [];
+  List<dynamic> _requestHistory = [];
+  final Set<int> _expandedIndices = {};
   bool _isLoading = true;
+  String _userDisplayName = 'User';
+  int _userPoints = 0;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -25,16 +37,40 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadMalls();
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   Future<void> _loadMalls() async {
     setState(() => _isLoading = true);
     try {
       final malls = await ApiService.getAllMalls();
       final discounts = await ApiService.getAllPublicDiscounts();
+      final userRes = await ApiService.getCurrentUser();
+      final historyRes = await ApiService.getUserHistory();
 
       if (mounted) {
         setState(() {
           _malls = malls;
           _discounts = discounts;
+          if (historyRes['ok'] == true) {
+            _requestHistory = historyRes['data'] ?? [];
+          }
+          if (userRes['ok'] == true && userRes['data'] != null) {
+            final data = userRes['data'] as Map<String, dynamic>;
+            final rawName = data['name']?.toString().trim();
+            if (rawName != null && rawName.isNotEmpty) {
+              _userDisplayName = rawName.split(' ').first;
+            }
+            final p = data['points'];
+            if (p is int) {
+              _userPoints = p;
+            } else if (p != null) {
+              _userPoints = int.tryParse(p.toString()) ?? 0;
+            }
+          }
           _isLoading = false;
         });
       }
@@ -55,15 +91,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'MALLIFY',
-          style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.5, fontSize: 22),
-        ),
-        backgroundColor: const Color(0xFF4A90E2),
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
       backgroundColor: const Color(0xFFF7FBFF),
       body: Stack(
         children: [
@@ -82,29 +109,81 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-            // Welcome Header
+            // Top greeting + search (white strip; replaces blue header)
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: const BoxDecoration(
-                color: Color(0xFF4A90E2),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(32),
-                  bottomRight: Radius.circular(32),
-                ),
-              ),
+              color: Colors.white,
+              padding: EdgeInsets.fromLTRB(20, MediaQuery.paddingOf(context).top + 12, 20, 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Welcome Back,',
-                    style: TextStyle(color: Colors.white70, fontSize: 16),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Hi, $_userDisplayName',
+                              style: const TextStyle(
+                                fontSize: 26,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF0F172A),
+                                height: 1.2,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF0F7FF),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: const Color(0xFFE2E8F0)),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _HexStarBadge(),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '$_userPoints pts',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFF3B82F6),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Material(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        child: InkWell(
+                          onTap: widget.onOpenNotifications,
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: const Color(0xFFE2E8F0)),
+                            ),
+                            child: const Icon(
+                              Icons.notifications_outlined,
+                              color: Color(0xFF334155),
+                              size: 22,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Explore What\'s New',
-                    style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
-                  ),
+                  // Search bar removed as per request
                 ],
               ),
             ),
@@ -143,6 +222,32 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                         ),
                       ),
+
+            const SizedBox(height: 32),
+
+            // Previous Requests Section
+            if (!_isLoading && _requestHistory.isNotEmpty) ...[
+              const Padding(
+                padding: EdgeInsets.fromLTRB(24, 0, 24, 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Previous Requests',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF2C3E50)),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  children: _requestHistory.asMap().entries.map((entry) {
+                    return _buildHistoryItem(entry.key + 1, entry.value);
+                  }).toList(),
+                ),
+              ),
+            ],
             
             const SizedBox(height: 32),
             
@@ -417,4 +522,181 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  Widget _buildHistoryItem(int displayIndex, dynamic req) {
+    List<dynamic> items = req['items'] ?? [];
+    double budget = double.tryParse(req['budget']?.toString() ?? '0') ?? 0;
+    bool isExpanded = _expandedIndices.contains(displayIndex);
+    
+    String dateStr = req['published_at'] != null 
+      ? DateTime.parse(req['published_at'].toString()).toString().split(' ')[0] 
+      : 'Recently';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFF1F5F9)),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4))],
+      ),
+      child: Column(
+        children: [
+          // Header
+          InkWell(
+            onTap: () => setState(() => isExpanded ? _expandedIndices.remove(displayIndex) : _expandedIndices.add(displayIndex)),
+            borderRadius: BorderRadius.circular(20),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Request #$displayIndex', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
+                      const SizedBox(height: 4),
+                      Text(dateStr, style: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8), fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('EGP ${budget.toStringAsFixed(0)}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
+                      const SizedBox(width: 8),
+                      Icon(isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, size: 20, color: const Color(0xFF94A3B8)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          if (isExpanded) ...[
+            const Divider(height: 1, color: Color(0xFFF1F5F9)),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: items.map((item) => _buildCompactProductItem(item)).toList(),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompactProductItem(dynamic item) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          // Product Image
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: (item['category_image'] != null && item['category_image'].toString().isNotEmpty)
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    ApiService.getImageUrl(item['category_image'].toString()),
+                    fit: BoxFit.cover,
+                  ),
+                )
+              : (item['product_image'] != null && item['product_image'].toString().isNotEmpty)
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        ApiService.getImageUrl(item['product_image'].toString()),
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : const Icon(Icons.shopping_bag_outlined, size: 24, color: Color(0xFF94A3B8)),
+          ),
+          const SizedBox(width: 12),
+          // Details
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item['product_name'] ?? 'Product',
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF334155)),
+                ),
+                Text(
+                  '${item['product_category_name'] ?? 'Item'} • ${item['store_name'] ?? 'Store'}',
+                  style: const TextStyle(fontSize: 11, color: Color(0xFF64748B), fontWeight: FontWeight.w500),
+                ),
+                Text(
+                  'Size: ${item['size'] ?? 'N/A'}',
+                  style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8), fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+          ),
+          // Price
+          Text(
+            'EGP ${double.tryParse(item['price']?.toString() ?? '0')?.toStringAsFixed(0)}',
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(0xFF059669)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Small blue hexagon with white star (points badge), matching app accent.
+class _HexStarBadge extends StatelessWidget {
+  const _HexStarBadge({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 22,
+      height: 22,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          CustomPaint(
+            size: const Size(22, 22),
+            painter: _HexagonFillPainter(color: Color(0xFF4A90E2)),
+          ),
+          const Icon(Icons.star_rounded, size: 11, color: Colors.white),
+        ],
+      ),
+    );
+  }
+}
+
+class _HexagonFillPainter extends CustomPainter {
+  _HexagonFillPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    final path = Path()
+      ..moveTo(w / 2, 0)
+      ..lineTo(w, h * 0.25)
+      ..lineTo(w, h * 0.75)
+      ..lineTo(w / 2, h)
+      ..lineTo(0, h * 0.75)
+      ..lineTo(0, h * 0.25)
+      ..close();
+    canvas.drawPath(path, Paint()..color = color);
+  }
+
+  @override
+  bool shouldRepaint(covariant _HexagonFillPainter oldDelegate) =>
+      oldDelegate.color != color;
 }

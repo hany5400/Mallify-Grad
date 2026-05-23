@@ -245,7 +245,7 @@ export const getUserHistory = async (userId) => {
             ur.request_id,
             ur.budget,
             COALESCE(res.total_price, 0) as total_price,
-            'Recent' as date
+            ur.published_at
         FROM user_request ur
         LEFT JOIN result res ON ur.request_id = res.request_id
         WHERE ur.user_id = ?

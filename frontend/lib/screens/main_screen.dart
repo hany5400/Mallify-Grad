@@ -70,7 +70,11 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> screens = [
-      HomeScreen(role: widget.role),
+      HomeScreen(
+        role: widget.role,
+        onOpenNotifications: () => setState(() => _currentIndex = 2),
+        onOpenFilter: () => setState(() => _currentIndex = 1),
+      ),
       FilteringScreen(
         isActive: _currentIndex == 1,
         role: widget.role,
