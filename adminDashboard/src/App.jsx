@@ -2234,36 +2234,40 @@ function Modal({ tab, item, token, onClose, refresh, user }) {
 
                   {showCategoryList && currentTarget.product_id && (
                     <div className="dropdown-search-list animate-fade">
-                      {!selectedTargets.some(st => String(st.product_id) === String(currentTarget.product_id) && !st.product_category_id) && (
-                        <div 
-                          className={`dropdown-item ${!currentTarget.product_category_id ? 'selected' : ''}`}
-                          onClick={() => {
-                            setCurrentTarget({ ...currentTarget, product_category_id: '' });
-                            setCategorySearch('Apply to all types');
-                            setShowCategoryList(false);
-                          }}
-                        >
-                          <CheckCircle size={14} />
-                          <span>Apply to all types</span>
-                        </div>
+                      {selectedTargets.some(st => String(st.product_id) === String(currentTarget.product_id) && !st.product_category_id) ? (
+                        <div style={{ padding: '12px', fontSize: '12px', color: '#94a3b8', textAlign: 'center' }}>All types already selected for this product</div>
+                      ) : (
+                        <>
+                          <div 
+                            className={`dropdown-item ${!currentTarget.product_category_id ? 'selected' : ''}`}
+                            onClick={() => {
+                              setCurrentTarget({ ...currentTarget, product_category_id: '' });
+                              setCategorySearch('Apply to all types');
+                              setShowCategoryList(false);
+                            }}
+                          >
+                            <CheckCircle size={14} />
+                            <span>Apply to all types</span>
+                          </div>
+                          {targetCategories
+                            .filter(c => (c.product_category_name || '').toLowerCase().includes((categorySearch || '').toLowerCase()))
+                            .filter(c => !selectedTargets.some(st => String(st.product_category_id) === String(c.id)))
+                            .map(c => (
+                            <div 
+                              key={c.id} 
+                              className={`dropdown-item ${currentTarget.product_category_id === String(c.id) ? 'selected' : ''}`}
+                              onClick={() => {
+                                setCurrentTarget({ ...currentTarget, product_category_id: String(c.id) });
+                                setCategorySearch(`${c.product_category_name} (${c.size})`);
+                                setShowCategoryList(false);
+                              }}
+                            >
+                              <Plus size={14} />
+                              <span>{c.product_category_name} <small style={{ opacity: 0.6 }}>({c.size})</small></span>
+                            </div>
+                          ))}
+                        </>
                       )}
-                      {targetCategories
-                        .filter(c => (c.product_category_name || '').toLowerCase().includes((categorySearch || '').toLowerCase()))
-                        .filter(c => !selectedTargets.some(st => String(st.product_category_id) === String(c.id)))
-                        .map(c => (
-                        <div 
-                          key={c.id} 
-                          className={`dropdown-item ${currentTarget.product_category_id === String(c.id) ? 'selected' : ''}`}
-                          onClick={() => {
-                            setCurrentTarget({ ...currentTarget, product_category_id: String(c.id) });
-                            setCategorySearch(`${c.product_category_name} (${c.size})`);
-                            setShowCategoryList(false);
-                          }}
-                        >
-                          <Plus size={14} />
-                          <span>{c.product_category_name} <small style={{ opacity: 0.6 }}>({c.size})</small></span>
-                        </div>
-                      ))}
                     </div>
                   )}
                 </div>
