@@ -76,9 +76,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   final List<Map<String, dynamic>> _paymentMethods = [
     {'name': 'Visa Card', 'icon': Icons.credit_card_rounded, 'color': const Color(0xFF4A90E2)},
-    {'name': 'InstaPay', 'icon': Icons.account_balance_rounded, 'color': const Color(0xFF22C55E)},
-    {'name': 'Vodafone Cash', 'icon': Icons.phone_android_rounded, 'color': const Color(0xFFE11D48)},
-    {'name': 'Orange Cash', 'icon': Icons.phone_android_rounded, 'color': const Color(0xFFF97316)},
+    {'name': 'InstaPay', 'imagePath': 'assets/images/instapay logo.png', 'color': const Color(0xFF22C55E)},
+    {'name': 'Vodafone Cash', 'imagePath': 'assets/images/vodafone logo.webp', 'color': const Color(0xFFE11D48)},
+    {'name': 'Orange Cash', 'imagePath': 'assets/images/orange logo.png', 'color': const Color(0xFFF97316)},
   ];
 
   Future<void> _handlePayment() async {
@@ -357,8 +357,28 @@ class _PaymentScreenState extends State<PaymentScreen> {
       );
   }
 
+  /// Renders a logo image with a ColorFilter that turns white pixels transparent.
+  /// Works by making alpha proportional to (3·A − R − G − B): white → A=0, colours → A≈1.
+  Widget _buildLogo(String assetPath, {double size = 44}) {
+    return ColorFiltered(
+      colorFilter: const ColorFilter.matrix(<double>[
+        1, 0, 0, 0, 0,   // R
+        0, 1, 0, 0, 0,   // G
+        0, 0, 1, 0, 0,   // B
+        -1, -1, -1, 3, 0, // A: white → 0, colours → opaque
+      ]),
+      child: Image.asset(
+        assetPath,
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+      ),
+    );
+  }
+
   Widget _buildPaymentMethodItem(Map<String, dynamic> method) {
     bool isSelected = _selectedMethod == method['name'];
+    final hasImage = method.containsKey('imagePath');
     return GestureDetector(
       onTap: () => setState(() => _selectedMethod = method['name']),
       child: Container(
@@ -375,14 +395,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
         ),
         child: Row(
           children: [
-            Icon(method['icon'], color: method['color'], size: 24),
+            if (hasImage)
+              _buildLogo(method['imagePath'] as String, size: 44)
+            else
+              Icon(method['icon'] as IconData, color: method['color'] as Color, size: 28),
             const SizedBox(width: 16),
-            Text(method['name'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: isSelected ? Color(0xFF1F2937) : Color(0xFF6B7280))),
+            Text(method['name'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: isSelected ? const Color(0xFF1F2937) : const Color(0xFF6B7280))),
             const Spacer(),
             if (isSelected)
               const Icon(Icons.check_circle_rounded, color: Color(0xFF4A90E2), size: 24)
             else
-              Container(width: 24, height: 24, decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Color(0xFFE5E7EB), width: 2))),
+              Container(width: 24, height: 24, decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: const Color(0xFFE5E7EB), width: 2))),
           ],
         ),
       ),
@@ -446,14 +469,24 @@ class _PaymentScreenState extends State<PaymentScreen> {
           border: Border.all(color: Colors.white, width: 2),
         ),
         child: _buildTextField(
-          'InstaPay Address', 
-          'username@instapay', 
+          'InstaPay Address',
+          'username@instapay',
           Icons.account_balance_rounded,
           controller: _instaPayController,
+          prefixWidget: SizedBox(
+            width: 48,
+            height: 48,
+            child: Center(
+              child: _buildLogo('assets/images/instapay logo.png', size: 32),
+            ),
+          ),
         ),
       );
     } else {
       // Vodafone or Orange Cash
+      final logoPath = _selectedMethod == 'Vodafone Cash'
+          ? 'assets/images/vodafone logo.webp'
+          : 'assets/images/orange logo.png';
       return Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
@@ -462,24 +495,32 @@ class _PaymentScreenState extends State<PaymentScreen> {
           border: Border.all(color: Colors.white, width: 2),
         ),
         child: _buildTextField(
-          'Wallet Number', 
-          '01X XXXX XXXX', 
+          'Wallet Number',
+          '01X XXXX XXXX',
           Icons.phone_android_rounded,
           controller: _walletController,
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)],
+          prefixWidget: SizedBox(
+            width: 48,
+            height: 48,
+            child: Center(
+              child: _buildLogo(logoPath, size: 32),
+            ),
+          ),
         ),
       );
     }
   }
 
   Widget _buildTextField(
-    String label, 
-    String hint, 
+    String label,
+    String hint,
     IconData icon, {
     TextEditingController? controller,
     TextInputType? keyboardType,
     List<TextInputFormatter>? inputFormatters,
+    Widget? prefixWidget,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -492,7 +533,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           inputFormatters: inputFormatters,
           decoration: InputDecoration(
             hintText: hint,
-            prefixIcon: Icon(icon, size: 20, color: const Color(0xFF4A90E2)),
+            prefixIcon: prefixWidget ?? Icon(icon, size: 20, color: const Color(0xFF4A90E2)),
             filled: true,
             fillColor: Colors.white.withOpacity(0.9),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
