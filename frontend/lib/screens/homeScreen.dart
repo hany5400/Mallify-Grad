@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final malls = await ApiService.getAllMalls();
       final discounts = await ApiService.getAllPublicDiscounts();
       final userRes = await ApiService.getCurrentUser();
-      final historyRes = await ApiService.getUserHistory();
+      final historyRes = await ApiService.getUserHistory(limit: 'all');
 
       if (mounted) {
         setState(() {
@@ -263,8 +263,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
-                  children: _requestHistory.reversed.take(2).map((req) {
-                    final displayIndex = _requestHistory.indexOf(req) + 1;
+                  children: _requestHistory.take(2).map((req) {
+                    final displayIndex = _requestHistory.length - _requestHistory.indexOf(req);
                     return _buildHomeRequestCard(displayIndex, req);
                   }).toList(),
                 ),

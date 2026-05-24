@@ -235,12 +235,12 @@ export const finalSubmit = async (data, user) => {
     }
 };
 
-// Get User History (Last 3 Requests)
-export const getUserHistory = async (userId) => {
+// Get User History
+export const getUserHistory = async (userId, limit = 3) => {
     const { default: db } = await import('../../db/connection.js');
     
-    // 1. Get last 3 requests (use LEFT JOIN to show requests even without results yet)
-    const query = `
+    // 1. Get requests (use LEFT JOIN to show requests even without results yet)
+    let query = `
         SELECT 
             ur.request_id,
             ur.budget,
@@ -250,10 +250,15 @@ export const getUserHistory = async (userId) => {
         LEFT JOIN result res ON ur.request_id = res.request_id
         WHERE ur.user_id = ?
         ORDER BY ur.request_id DESC
-        LIMIT 3
     `;
     
-    const [requests] = await db.query(query, [userId]);
+    const params = [userId];
+    if (limit !== null) {
+        query += ` LIMIT ?`;
+        params.push(limit);
+    }
+    
+    const [requests] = await db.query(query, params);
     
     // 2. For each request, get the items
     const history = [];

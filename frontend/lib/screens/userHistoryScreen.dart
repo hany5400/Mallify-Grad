@@ -35,7 +35,7 @@ class _UserHistoryScreenState extends State<UserHistoryScreen> {
   Future<void> _loadHistory() async {
     setState(() => _isLoading = true);
     try {
-      final response = await ApiService.getUserHistory();
+      final response = await ApiService.getUserHistory(limit: 'all');
       if (response['ok'] == true) {
         _allRequests = response['data'] ?? [];
         _applyFilter();
@@ -51,7 +51,7 @@ class _UserHistoryScreenState extends State<UserHistoryScreen> {
         _filteredRequests = List.from(_allRequests);
       } else {
         _filteredRequests = _allRequests.asMap().entries.where((entry) {
-          final index = entry.key + 1;
+          final index = _allRequests.length - entry.key;
           final req = entry.value;
           final budget = req['budget']?.toString() ?? '';
           final dateStr = req['published_at'] != null 
@@ -145,7 +145,7 @@ class _UserHistoryScreenState extends State<UserHistoryScreen> {
                             itemBuilder: (context, idx) {
                               final req = _filteredRequests[idx];
                               // Find original index for display
-                              final originalIndex = _allRequests.indexOf(req) + 1;
+                              final originalIndex = _allRequests.length - _allRequests.indexOf(req);
                               return _buildHistoryCard(originalIndex, req);
                             },
                           ),

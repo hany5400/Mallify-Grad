@@ -78,10 +78,12 @@ router.get('/myRequests', authenticateUser, async (req, res) => {
     }
 });
 
-// get history for profile (last 3)
+// get history for profile
 router.get('/history', authenticateUser, async (req, res) => {
     try {
-        const history = await getUserHistory(req.user.id);
+        const limitParam = req.query.limit;
+        const limit = limitParam === 'all' ? null : (limitParam ? parseInt(limitParam) : 3);
+        const history = await getUserHistory(req.user.id, limit);
         res.json({ ok: true, data: history });
     } catch (err) {
         res.status(500).json({ ok: false, message: err.message });

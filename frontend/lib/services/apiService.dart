@@ -204,10 +204,13 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>> getUserHistory() async {
+  static Future<Map<String, dynamic>> getUserHistory({String? limit}) async {
     try {
+      final url = limit != null
+          ? '$baseUrl/userRequest/history?limit=$limit'
+          : '$baseUrl/userRequest/history';
       final response = await http.get(
-        Uri.parse('$baseUrl/userRequest/history'),
+        Uri.parse(url),
         headers: await _headers(),
       );
       return jsonDecode(response.body);
