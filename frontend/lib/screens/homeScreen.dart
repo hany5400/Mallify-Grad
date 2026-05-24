@@ -4,6 +4,7 @@ import 'authScreen.dart';
 import 'profileScreen.dart';
 import 'filteringScreen.dart';
 import 'main_screen.dart';
+import 'userHistoryScreen.dart';
 import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -229,14 +230,32 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // Previous Requests Section
             if (!_isLoading && _requestHistory.isNotEmpty) ...[
-              const Padding(
-                padding: EdgeInsets.fromLTRB(24, 0, 24, 16),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    const Text(
                       'Previous Requests',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF2C3E50)),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const UserHistoryScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'View All',
+                        style: TextStyle(
+                          color: Color(0xFF2563EB),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -244,8 +263,9 @@ class _HomeScreenState extends State<HomeScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
-                  children: _requestHistory.asMap().entries.map((entry) {
-                    return _buildHistoryItem(entry.key + 1, entry.value);
+                  children: _requestHistory.reversed.take(2).map((req) {
+                    final displayIndex = _requestHistory.indexOf(req) + 1;
+                    return _buildHomeRequestCard(displayIndex, req);
                   }).toList(),
                 ),
               ),
@@ -533,132 +553,196 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHistoryItem(int displayIndex, dynamic req) {
+  Widget _buildHomeRequestCard(int displayIndex, dynamic req) {
     List<dynamic> items = req['items'] ?? [];
     double budget = double.tryParse(req['budget']?.toString() ?? '0') ?? 0;
-    bool isExpanded = _expandedIndices.contains(displayIndex);
     
     String dateStr = req['published_at'] != null 
       ? DateFormat('MMM d, yyyy').format(DateTime.parse(req['published_at'].toString()))
       : 'Recently';
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4))],
-      ),
-      child: Column(
-        children: [
-          // Header
-          InkWell(
-            onTap: () => setState(() => isExpanded ? _expandedIndices.remove(displayIndex) : _expandedIndices.add(displayIndex)),
-            borderRadius: BorderRadius.circular(20),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Request #$displayIndex', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
-                      const SizedBox(height: 4),
-                      Text(dateStr, style: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8), fontWeight: FontWeight.w500)),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text('EGP ${budget.toStringAsFixed(0)}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
-                      const SizedBox(width: 8),
-                      Icon(isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, size: 20, color: const Color(0xFF94A3B8)),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          
-          if (isExpanded) ...[
-            const Divider(height: 1, color: Color(0xFFF1F5F9)),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: items.map((item) => _buildCompactProductItem(item)).toList(),
-              ),
-            ),
-          ],
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0F172A).withOpacity(0.03),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          )
         ],
       ),
-    );
-  }
-
-  Widget _buildCompactProductItem(dynamic item) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          // Product Image
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: (item['category_image'] != null && item['category_image'].toString().isNotEmpty)
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    ApiService.getImageUrl(item['category_image'].toString()),
-                    fit: BoxFit.cover,
-                  ),
-                )
-              : (item['product_image'] != null && item['product_image'].toString().isNotEmpty)
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.network(
-                        ApiService.getImageUrl(item['product_image'].toString()),
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  : const Icon(Icons.shopping_bag_outlined, size: 24, color: Color(0xFF94A3B8)),
-          ),
-          const SizedBox(width: 12),
-          // Details
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UserHistoryScreen(
+                  initialSearchQuery: 'Request #$displayIndex',
+                ),
+              ),
+            );
+          },
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
               children: [
-                Text(
-                  item['product_name'] ?? 'Product',
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF334155)),
+                // Info Column
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            'Request #$displayIndex',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF0F172A),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEFF6FF),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              '${items.length} ${items.length == 1 ? "Item" : "Items"}',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF2563EB),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        dateStr,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF94A3B8),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      // Overlapping previews
+                      if (items.isNotEmpty)
+                        SizedBox(
+                          height: 32,
+                          child: Stack(
+                            children: List.generate(
+                              items.length > 4 ? 4 : items.length,
+                              (idx) {
+                                final item = items[idx];
+                                final isLast = idx == 3 && items.length > 4;
+                                return Positioned(
+                                  left: idx * 24.0,
+                                  child: Container(
+                                    width: 32,
+                                    height: 32,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: Colors.white, width: 2),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.05),
+                                          blurRadius: 4,
+                                        )
+                                      ],
+                                    ),
+                                    child: isLast
+                                        ? Container(
+                                            decoration: const BoxDecoration(
+                                              color: Color(0xFF1E293B),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                '+${items.length - 3}',
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        : ClipRRect(
+                                            borderRadius: BorderRadius.circular(16),
+                                            child: _buildItemImage(item),
+                                          ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-                Text(
-                  '${item['product_category_name'] ?? 'Item'} • ${item['store_name'] ?? 'Store'}',
-                  style: const TextStyle(fontSize: 11, color: Color(0xFF64748B), fontWeight: FontWeight.w500),
-                ),
-                Text(
-                  'Size: ${item['size'] ?? 'N/A'}',
-                  style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8), fontWeight: FontWeight.w600),
+                
+                // Right Column (Budget & Arrow)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'EGP ${budget.toStringAsFixed(0)}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF0F172A),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFF1F5F9),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.chevron_right_rounded,
+                        color: Color(0xFF64748B),
+                        size: 20,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-          // Price
-          Text(
-            'EGP ${double.tryParse(item['price']?.toString() ?? '0')?.toStringAsFixed(0)}',
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(0xFF059669)),
-          ),
-        ],
+        ),
       ),
     );
+  }
+
+  Widget _buildItemImage(dynamic item) {
+    if (item['category_image'] != null && item['category_image'].toString().isNotEmpty) {
+      return Image.network(
+        ApiService.getImageUrl(item['category_image'].toString()),
+        fit: BoxFit.cover,
+        errorBuilder: (c, e, s) => const Icon(Icons.shopping_bag_outlined, size: 14, color: Color(0xFF94A3B8)),
+      );
+    } else if (item['product_image'] != null && item['product_image'].toString().isNotEmpty) {
+      return Image.network(
+        ApiService.getImageUrl(item['product_image'].toString()),
+        fit: BoxFit.cover,
+        errorBuilder: (c, e, s) => const Icon(Icons.shopping_bag_outlined, size: 14, color: Color(0xFF94A3B8)),
+      );
+    }
+    return const Icon(Icons.shopping_bag_outlined, size: 14, color: Color(0xFF94A3B8));
   }
 }

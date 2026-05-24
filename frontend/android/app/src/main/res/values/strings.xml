@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Replace with your actual Facebook App ID and Client Token from the Meta Developer Console -->
+    <string name="facebook_app_id">1239870461557323</string>
+    <string name="fb_login_protocol_scheme">fb1239870461557323</string>
+    <string name="facebook_client_token">afd7801bc91edeab2e4b851ae25a88a6</string>
+</resources>

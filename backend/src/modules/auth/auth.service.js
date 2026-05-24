@@ -145,6 +145,63 @@ export const googleLogin = async (req, res, next) => {
     }
 };
 
+// Facebook Sign-In / Sign-Up
+export const facebookLogin = async (req, res, next) => {
+    try {
+        let { email, name, facebookId } = req.body;
+
+        if (!email || String(email).trim() === '' || email === 'null') {
+            if (facebookId) {
+                email = `fb_${facebookId}@mallify.com`;
+            } else {
+                return res.status(400).json({ ok: false, message: "Missing email from Facebook account" });
+            }
+        }
+
+        email = String(email).trim().toLowerCase();
+
+        let user = await getUserByEmailModel(email);
+
+        // Auto-register if first time
+        if (!user) {
+            const userCode = (name || 'FB').slice(0, 2).toUpperCase() + Math.floor(100 + Math.random() * 900);
+            user = await createUserModel({
+                name: name || 'Facebook User',
+                email,
+                password: facebookId || 'facebook-oauth',  // placeholder
+                gender: 'male',
+                DOB: null,
+                userCode,
+                points: 0,
+                role: 'user',
+            });
+            await createSubscription({
+                user_id: user.id,
+                plan_type: 'free',
+                status: 'active',
+                start_date: new Date().toISOString().split('T')[0],
+            });
+        }
+
+        const token = jwt.sign(
+            { id: user.id, email: user.email },
+            "your_secret_key_here",
+            { expiresIn: "1h" }
+        );
+
+        return res.json({
+            ok: true,
+            message: "Facebook login successful",
+            data: user,
+            role: user.role ?? 'user',
+            token,
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
 // Get current user profile
 export const me = async (req, res, next) => {
     try {

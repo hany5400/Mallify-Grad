@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import '../services/apiService.dart';
 import 'homeScreen.dart';
 import 'main_screen.dart';
@@ -168,6 +169,76 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
+  Future<void> _signInWithFacebook() async {
+    setState(() => _isLoading = true);
+    try {
+      // Force logout of previous Facebook session to show login prompt
+      try {
+        await FacebookAuth.instance.logOut();
+        await FirebaseAuth.instance.signOut();
+      } catch (_) {}
+
+      final LoginResult loginResult = await FacebookAuth.instance.login(
+        permissions: ['public_profile', 'email'],
+      );
+
+      if (loginResult.status == LoginStatus.success) {
+        final AccessToken accessToken = loginResult.accessToken!;
+        final OAuthCredential credential = FacebookAuthProvider.credential(accessToken.token);
+        
+        final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+        final User? firebaseUser = userCredential.user;
+
+        if (firebaseUser == null) {
+          throw Exception('Firebase authentication failed');
+        }
+
+        final String email = firebaseUser.email ?? '';
+        String finalEmail = email;
+        if (finalEmail.isEmpty) {
+          try {
+            final userData = await FacebookAuth.instance.getUserData();
+            finalEmail = userData['email'] ?? '';
+          } catch (_) {}
+        }
+
+        final response = await ApiService.facebookSignIn(
+          finalEmail,
+          firebaseUser.displayName ?? 'Facebook User',
+          firebaseUser.uid,
+        );
+
+        if (!mounted) return;
+
+        if (response['ok'] == true) {
+          final String role = response['role'] ?? 'user';
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MainScreen(role: role)),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(response['message'] ?? 'An error occurred during Facebook Sign-In'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } else if (loginResult.status == LoginStatus.cancelled) {
+        setState(() => _isLoading = false);
+      } else {
+        throw Exception(loginResult.message ?? 'Facebook login failed');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Facebook Sign-In Error: ${e.toString()}'), backgroundColor: Colors.red),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   Future<void> _selectDate() async {
     final pickedDate = await showDatePicker(
       context: context,
@@ -217,7 +288,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     children: [
                       const SizedBox(height: 20),
                       Text(
-                        _isLogin ? 'Welcome Back!' : 'Create Account',
+                        _isLogin ? 'Welcome Back' : 'Create Account',
                         style: const TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
@@ -227,7 +298,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        _isLogin ? 'Glad to see you again!' : 'Join Mallify and start saving',
+                        _isLogin ? 'Sign in to continue shopping' : 'Join Mallify and start saving',
                         style: const TextStyle(fontSize: 16, color: Color(0xFF6B7280)),
                         textAlign: TextAlign.center,
                       ),
@@ -333,34 +404,115 @@ class _AuthScreenState extends State<AuthScreen> {
                               ),
                       ),
                       if (_isLogin) ...[
-                        const SizedBox(height: 16),
-                        OutlinedButton(
-                          onPressed: _isLoading ? null : _signInWithGoogle,
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Color(0xFFE5E7EB)),
-                            padding: const EdgeInsets.symmetric(vertical: 18),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                            backgroundColor: Colors.white,
-                            elevation: 0,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.network(
-                                'https://developers.google.com/static/identity/images/g-logo.png',
-                                height: 24,
+                        const SizedBox(height: 32),
+                        Row(
+                          children: [
+                            const Expanded(
+                              child: Divider(
+                                color: Color(0xFFE5E7EB),
+                                thickness: 1,
                               ),
-                              const SizedBox(width: 12),
-                              const Text(
-                                'Sign in with Google',
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              child: Text(
+                                'or continue with',
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1F2937),
+                                  color: const Color(0xFF9CA3AF),
+                                  fontSize: 14,
+                                  fontFamily: 'Inter',
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                            const Expanded(
+                              child: Divider(
+                                color: Color(0xFFE5E7EB),
+                                thickness: 1,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Google Button
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: _isLoading ? null : _signInWithGoogle,
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(color: Color(0xFFE5E7EB)),
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                  backgroundColor: Colors.white,
+                                  elevation: 0,
+                                ),
+                                child: Image.network(
+                                  'https://developers.google.com/static/identity/images/g-logo.png',
+                                  height: 24,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            // Facebook Button
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: _isLoading ? null : _signInWithFacebook,
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(color: Color(0xFFE5E7EB)),
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                  backgroundColor: Colors.white,
+                                  elevation: 0,
+                                ),
+                                child: Container(
+                                  width: 24,
+                                  height: 24,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFF1877F2),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Center(
+                                    child: Text(
+                                      'f',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'sans-serif',
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            // Apple Button (Mockup placeholder)
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: _isLoading ? null : () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Apple Sign-In is coming soon!'),
+                                      backgroundColor: Colors.black,
+                                    ),
+                                  );
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(color: Color(0xFFE5E7EB)),
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                  backgroundColor: Colors.white,
+                                  elevation: 0,
+                                ),
+                                child: const Icon(
+                                  Icons.apple,
+                                  color: Colors.black,
+                                  size: 28,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                       const SizedBox(height: 24),

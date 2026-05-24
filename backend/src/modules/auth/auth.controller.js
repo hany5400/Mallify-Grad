@@ -1,5 +1,5 @@
 import express from "express";
-import { register, login, me, googleLogin } from "./auth.service.js";
+import { register, login, me, googleLogin, facebookLogin } from "./auth.service.js";
 
 const router = express.Router();
 
@@ -12,6 +12,8 @@ router.post("/register", register);
 router.post("/login", login);
 
 router.post("/google", googleLogin);
+
+router.post("/facebook", facebookLogin);
 
 router.get("/me/:id", me);
 

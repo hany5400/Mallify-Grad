@@ -235,7 +235,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
-                Text(email, style: const TextStyle(fontSize: 14, color: Color(0xFF64748B), fontWeight: FontWeight.w500)),
+                Text(
+                  email.startsWith('fb_') && email.endsWith('@mallify.com')
+                      ? 'Connected with Facebook'
+                      : email,
+                  style: const TextStyle(fontSize: 14, color: Color(0xFF64748B), fontWeight: FontWeight.w500),
+                ),
                 const SizedBox(height: 32),
 
                 // Stats Cards

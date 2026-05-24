@@ -80,6 +80,31 @@ class ApiService {
     }
   }
 
+  static Future<Map<String, dynamic>> facebookSignIn(String email, String name, String facebookId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/facebook'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          'email': email,
+          'name': name,
+          'facebookId': facebookId,
+        }),
+      );
+      
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data['ok'] == true) {
+        await _saveToken(data['token']);
+      }
+      return data;
+    } catch (e) {
+      return {'ok': false, 'message': 'Network error: $e'};
+    }
+  }
+
   static Future<Map<String, dynamic>> userRegister({
     required String name,
     required String email,
