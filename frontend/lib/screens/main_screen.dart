@@ -28,13 +28,14 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
-
+  String? _pendingMallId;
 
   @override
   void initState() {
     super.initState();
     _currentIndex = widget.initialTab;
-    
+    _pendingMallId = widget.initialMallId;
+
 
     if (widget.showSuccessMessage) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -74,11 +75,17 @@ class _MainScreenState extends State<MainScreen> {
         role: widget.role,
         onOpenNotifications: () => setState(() => _currentIndex = 2),
         onOpenFilter: () => setState(() => _currentIndex = 1),
+        onMallSelected: (mallId) {
+          setState(() {
+            _pendingMallId = mallId;
+            _currentIndex = 1;
+          });
+        },
       ),
       FilteringScreen(
         isActive: _currentIndex == 1,
         role: widget.role,
-        initialMallId: widget.initialMallId,
+        initialMallId: _pendingMallId,
         initialTargets: widget.initialTargets,
         initialBrandTier: widget.initialBrandTier,
       ),

@@ -10,12 +10,14 @@ class HomeScreen extends StatefulWidget {
   final String role;
   final VoidCallback? onOpenNotifications;
   final VoidCallback? onOpenFilter;
+  final void Function(String mallId)? onMallSelected;
 
   const HomeScreen({
     Key? key,
     required this.role,
     this.onOpenNotifications,
     this.onOpenFilter,
+    this.onMallSelected,
   }) : super(key: key);
 
   @override
@@ -303,81 +305,74 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildMallCard(dynamic mall) {
     final imageUrl = ApiService.getImageUrl(mall['image_url']);
-    
+    final mallId = mall['id']?.toString() ?? '';
+
     return GestureDetector(
       onTap: () {
-        final mallId = mall['mall_id']?.toString();
-        
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MainScreen(
-              role: widget.role,
-              initialTab: 1, // Filtering screen
-              initialMallId: mallId,
-            ),
-          ),
-        );
+        if (mallId.isNotEmpty && widget.onMallSelected != null) {
+          widget.onMallSelected!(mallId);
+        }
       },
       child: Container(
         width: 300,
         margin: const EdgeInsets.symmetric(horizontal: 8),
         child: Card(
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        elevation: 8,
-        shadowColor: Colors.black26,
-        child: Stack(
-          children: [
-            // Image
-            Positioned.fill(
-              child: imageUrl.isNotEmpty
-                  ? Image.network(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (c, e, s) => Container(color: Colors.grey[200], child: const Icon(Icons.image, size: 50)),
-                    )
-                  : Container(color: Colors.grey[200], child: const Icon(Icons.image, size: 50)),
-            ),
-            // Gradient Overlay
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          elevation: 8,
+          shadowColor: Colors.black26,
+          child: Stack(
+            children: [
+              // Image
+              Positioned.fill(
+                child: imageUrl.isNotEmpty
+                    ? Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (c, e, s) => Container(color: Colors.grey[200], child: const Icon(Icons.image, size: 50)),
+                      )
+                    : Container(color: Colors.grey[200], child: const Icon(Icons.image, size: 50)),
+              ),
+              // Gradient Overlay
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+                    ),
                   ),
                 ),
               ),
-            ),
-            // Mall Name
-            Positioned(
-              bottom: 20,
-              left: 20,
-              right: 20,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    mall['mall_name'] ?? 'Mystery Mall',
-                    style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: const [
-                      Icon(Icons.location_on, color: Colors.white70, size: 14),
-                      SizedBox(width: 4),
-                      Text('Visit Now', style: TextStyle(color: Colors.white70, fontSize: 13)),
-                    ],
-                  ),
-                ],
+              // Mall Name
+              Positioned(
+                bottom: 20,
+                left: 20,
+                right: 20,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      mall['mall_name'] ?? 'Mystery Mall',
+                      style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: const [
+                        Icon(Icons.location_on, color: Colors.white70, size: 14),
+                        SizedBox(width: 4),
+                        Text('Shop Here', style: TextStyle(color: Colors.white70, fontSize: 13)),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
 
   Widget _buildDiscountCard(dynamic discount) {

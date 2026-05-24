@@ -4,6 +4,36 @@ import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'main_screen.dart';
 
+/// Auto-formats expiry date as MM/YY.
+/// - Inserts "/" automatically after the 2 month digits.
+/// - Blocks further input until "/" is present.
+class ExpiryDateInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    // Strip everything except digits
+    final digits = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+
+    // Build formatted string
+    String formatted = '';
+    if (digits.length >= 2) {
+      formatted = digits.substring(0, 2) + '/' + digits.substring(2);
+    } else {
+      formatted = digits;
+    }
+
+    // Clamp to MM/YY (5 chars)
+    if (formatted.length > 5) {
+      formatted = formatted.substring(0, 5);
+    }
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}
+
 class PaymentScreen extends StatefulWidget {
   final String planTitle;
   final String price;
@@ -388,7 +418,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     Icons.calendar_today_outlined,
                     controller: _expiryController,
                     keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(4)],
+                    inputFormatters: [ExpiryDateInputFormatter()],
                   ),
                 ),
                 const SizedBox(width: 16),

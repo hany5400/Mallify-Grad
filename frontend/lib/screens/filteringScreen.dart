@@ -233,6 +233,12 @@ class _FilteringScreenState extends State<FilteringScreen> {
     if (widget.isActive && !oldWidget.isActive) {
       _checkAndShowSubscription();
     }
+    // Auto-select mall when navigated from a mall card on the home screen
+    if (widget.initialMallId != oldWidget.initialMallId &&
+        widget.initialMallId != null &&
+        widget.initialMallId!.isNotEmpty) {
+      setState(() => _selectedMall = widget.initialMallId!);
+    }
   }
 
   Future<void> _loadMalls() async {
