@@ -263,9 +263,11 @@ class _HomeScreenState extends State<HomeScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
-                  children: _requestHistory.take(2).map((req) {
-                    final displayIndex = _requestHistory.length - _requestHistory.indexOf(req);
-                    return _buildHomeRequestCard(displayIndex, req);
+                  children: _requestHistory.take(2).toList().asMap().entries.map((entry) {
+                    final localIndex = entry.key + 1;
+                    final req = entry.value;
+                    final absoluteIndex = _requestHistory.length - _requestHistory.indexOf(req);
+                    return _buildHomeRequestCard(localIndex, absoluteIndex, req);
                   }).toList(),
                 ),
               ),
@@ -553,7 +555,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHomeRequestCard(int displayIndex, dynamic req) {
+  Widget _buildHomeRequestCard(int displayIndex, int absoluteIndex, dynamic req) {
     List<dynamic> items = req['items'] ?? [];
     double budget = double.tryParse(req['budget']?.toString() ?? '0') ?? 0;
     
@@ -584,7 +586,7 @@ class _HomeScreenState extends State<HomeScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) => UserHistoryScreen(
-                  initialSearchQuery: 'Request #$displayIndex',
+                  initialSearchQuery: 'Request #$absoluteIndex',
                 ),
               ),
             );
