@@ -55,6 +55,31 @@ class ApiService {
     }
   }
 
+  static Future<Map<String, dynamic>> googleSignIn(String email, String name, String googleId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/google'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          'email': email,
+          'name': name,
+          'googleId': googleId,
+        }),
+      );
+      
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data['ok'] == true) {
+        await _saveToken(data['token']);
+      }
+      return data;
+    } catch (e) {
+      return {'ok': false, 'message': 'Network error: $e'};
+    }
+  }
+
   static Future<Map<String, dynamic>> userRegister({
     required String name,
     required String email,

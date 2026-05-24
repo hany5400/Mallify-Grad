@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "157816088543",
+    "project_id": "mallify-82b01",
+    "storage_bucket": "mallify-82b01.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:157816088543:android:22e85168701bc9d77ac66a",
+        "android_client_info": {
+          "package_name": "com.example.mallify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "157816088543-6aa9qgbdrk71rk8ftpoj9kr918m35e24.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mallify",
+            "certificate_hash": "5395b62a309215815e87ceaa89fff7690c85c15a"
+          }
+        },
+        {
+          "client_id": "157816088543-mk9aljgrhoni4g43orehrc2a8v4h6h5o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAv7jy5r69N6nF9ex3E-SqV2VM0ixjods4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "157816088543-mk9aljgrhoni4g43orehrc2a8v4h6h5o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

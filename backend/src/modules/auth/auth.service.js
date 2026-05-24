@@ -92,15 +92,67 @@ export const login = async (req, res, next) => {
     }
 };
 
-// Get user info
+// Google Sign-In / Sign-Up
+export const googleLogin = async (req, res, next) => {
+    try {
+        let { email, name, googleId } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ ok: false, message: "Missing email from Google account" });
+        }
+
+        email = String(email).trim().toLowerCase();
+
+        let user = await getUserByEmailModel(email);
+
+        // Auto-register if first time
+        if (!user) {
+            const userCode = (name || 'GG').slice(0, 2).toUpperCase() + Math.floor(100 + Math.random() * 900);
+            user = await createUserModel({
+                name: name || 'Google User',
+                email,
+                password: googleId || 'google-oauth',  // placeholder, not used for login
+                gender: 'male',
+                DOB: null,
+                userCode,
+                points: 0,
+                role: 'user',
+            });
+            await createSubscription({
+                user_id: user.id,
+                plan_type: 'free',
+                status: 'active',
+                start_date: new Date().toISOString().split('T')[0],
+            });
+        }
+
+        const token = jwt.sign(
+            { id: user.id, email: user.email },
+            "your_secret_key_here",
+            { expiresIn: "1h" }
+        );
+
+        return res.json({
+            ok: true,
+            message: "Google login successful",
+            data: user,
+            role: user.role ?? 'user',
+            token,
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+// Get current user profile
 export const me = async (req, res, next) => {
     try {
         const id = req.params.id;
         const user = await getUserByIdModel(id);
         if (!user) return res.status(404).json({ ok: false, message: "User not found" });
-
         return res.json({ ok: true, data: user });
     } catch (err) {
         next(err);
     }
-};
+};
