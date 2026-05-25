@@ -49,7 +49,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
   bool _isProcessing = false;
   String _selectedMethod = 'Visa Card';
   late double _currentDuration;
-  final double _basePricePerMonth = 499.0;
+  final double _basePricePerMonth = 250.0;
+  
+  double _calculateAmount() {
+    double original = _basePricePerMonth * _currentDuration;
+    if (_currentDuration >= 12.0) {
+      return 2500.0;
+    } else if (_currentDuration >= 10.0) {
+      return 2500.0; // Avoid 10 or 11 months from costing more than 12 months
+    } else {
+      // Linear scaling: 0% discount at 1 month, up to 16.67% discount at 10+ months
+      double discountPercent = (_currentDuration - 1) * 0.0185;
+      if (discountPercent > 0.1667) discountPercent = 0.1667;
+      if (discountPercent < 0) discountPercent = 0;
+      return original * (1 - discountPercent);
+    }
+  }
 
   // Controllers for validation
   final TextEditingController _cardNoController = TextEditingController();
@@ -107,7 +122,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     setState(() => _isProcessing = true);
     
-    final amount = _basePricePerMonth * _currentDuration;
+    final amount = _calculateAmount();
     
     final response = await ApiService.processPayment(amount, _selectedMethod, _currentDuration);
     
@@ -321,7 +336,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             ],
                           ),
                         ),
-                        Text('${(_basePricePerMonth * _currentDuration).toStringAsFixed(0)} EGP', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Color(0xFF1F2937))),
+                        Text('${_calculateAmount().toStringAsFixed(0)} EGP', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Color(0xFF1F2937))),
                       ],
                     ),
                   ),
@@ -566,7 +581,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Pay ${(_basePricePerMonth * _currentDuration).toStringAsFixed(0)} EGP', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Pay ${_calculateAmount().toStringAsFixed(0)} EGP', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(width: 8),
             if (_isProcessing)
               const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))

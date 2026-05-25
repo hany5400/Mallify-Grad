@@ -495,133 +495,161 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showSubscriptionPopup() {
+    String selectedPlan = 'monthly'; // 'monthly' or 'yearly'
     showDialog(
       context: context,
-      builder: (context) => BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              color: Colors.white.withOpacity(0.4),
-              border: Border.all(color: Colors.white.withOpacity(0.6), width: 1.5),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 30,
-                  spreadRadius: 5,
-                )
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-              Container(
-                padding: const EdgeInsets.all(18),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: Dialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              child: Container(
+                padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF60A5FA), Color(0xFF3B82F6)],
-                  ),
-                  shape: BoxShape.circle,
+                  borderRadius: BorderRadius.circular(24),
+                  color: Colors.white.withOpacity(0.4),
+                  border: Border.all(color: Colors.white.withOpacity(0.6), width: 1.5),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF3B82F6).withOpacity(0.5),
-                      blurRadius: 15,
-                      spreadRadius: 2,
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 30,
+                      spreadRadius: 5,
                     )
                   ],
                 ),
-                child: const Icon(Icons.diamond_rounded, color: Colors.white, size: 48),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Premium Plan Required',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1F2937)),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'Upgrade to Premium for unlimited searches and exclusive features!',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 15, color: Color(0xFF6B7280), height: 1.5),
-              ),
-              const SizedBox(height: 32),
-              // Plan Options
-              _buildPlanOption(
-                title: 'Premium Monthly',
-                price: '499 EGP / Month',
-                icon: Icons.flash_on_rounded,
-                isRecommended: true,
-              ),
-              const SizedBox(height: 12),
-              _buildPlanOption(
-                title: 'Premium Yearly',
-                price: '4,990 EGP / Year',
-                icon: Icons.verified_rounded,
-                isRecommended: false,
-              ),
-              const SizedBox(height: 24),
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: [Color(0xFF60A5FA), Color(0xFF3B82F6)]),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF3B82F6).withOpacity(0.4),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6),
-                    )
-                  ],
-                ),
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const PaymentScreen(
-                          planTitle: 'Premium Monthly',
-                          price: '499 EGP',
-                          durationMonths: 1.0,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF60A5FA), Color(0xFF3B82F6)],
                         ),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF3B82F6).withOpacity(0.5),
+                            blurRadius: 15,
+                            spreadRadius: 2,
+                          )
+                        ],
                       ),
-                    ).then((_) => _loadData()); // Refresh data after returning from payment
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                  child: const Text('Upgrade Now', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                      child: const Icon(Icons.diamond_rounded, color: Colors.white, size: 48),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Premium Plan Required',
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1F2937)),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Upgrade to Premium for unlimited searches and exclusive features!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 15, color: Color(0xFF6B7280), height: 1.5),
+                    ),
+                    const SizedBox(height: 32),
+                    // Plan Options
+                    GestureDetector(
+                      onTap: () => setDialogState(() => selectedPlan = 'monthly'),
+                      child: _buildPlanOption(
+                        title: 'Premium Monthly',
+                        price: '250 EGP / Month',
+                        icon: Icons.flash_on_rounded,
+                        isRecommended: true,
+                        isSelected: selectedPlan == 'monthly',
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    GestureDetector(
+                      onTap: () => setDialogState(() => selectedPlan = 'yearly'),
+                      child: _buildPlanOption(
+                        title: 'Premium Yearly',
+                        price: '2,500 EGP / Year',
+                        icon: Icons.verified_rounded,
+                        isRecommended: false,
+                        isSelected: selectedPlan == 'yearly',
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(colors: [Color(0xFF60A5FA), Color(0xFF3B82F6)]),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF3B82F6).withOpacity(0.4),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          )
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PaymentScreen(
+                                planTitle: selectedPlan == 'monthly' ? 'Premium Monthly' : 'Premium Yearly',
+                                price: selectedPlan == 'monthly' ? '250 EGP' : '2,500 EGP',
+                                durationMonths: selectedPlan == 'monthly' ? 1.0 : 12.0,
+                              ),
+                            ),
+                          ).then((_) => _loadData()); // Refresh data after returning from payment
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                        child: const Text('Upgrade Now', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Maybe Later', style: TextStyle(color: Color(0xFF6B7280))),
+                    ),
+                  ],
                 ),
               ),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Maybe Later', style: TextStyle(color: Color(0xFF6B7280))),
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        }
       ),
-    ),
     );
   }
 
-  Widget _buildPlanOption({required String title, required String price, required IconData icon, bool isRecommended = false}) {
+  Widget _buildPlanOption({
+    required String title,
+    required String price,
+    required IconData icon,
+    bool isRecommended = false,
+    bool isSelected = false,
+  }) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.6),
+        color: Colors.white.withOpacity(isSelected ? 0.9 : 0.6),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isRecommended ? const Color(0xFF3B82F6) : Colors.white.withOpacity(0.6), width: 1.5),
+        border: Border.all(
+          color: isSelected
+              ? const Color(0xFF2563EB)
+              : (isRecommended ? const Color(0xFF3B82F6) : Colors.white.withOpacity(0.6)),
+          width: isSelected ? 2.5 : 1.5,
+        ),
         boxShadow: [
-          if (isRecommended)
-            BoxShadow(color: const Color(0xFF3B82F6).withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4)),
+          if (isSelected || isRecommended)
+            BoxShadow(
+              color: (isSelected ? const Color(0xFF2563EB) : const Color(0xFF3B82F6)).withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
         ],
       ),
       child: Row(
@@ -629,10 +657,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: isRecommended ? const Color(0xFF3B82F6).withOpacity(0.1) : Colors.white.withOpacity(0.8),
+              color: isSelected 
+                  ? const Color(0xFF2563EB).withOpacity(0.1) 
+                  : (isRecommended ? const Color(0xFF3B82F6).withOpacity(0.1) : Colors.white.withOpacity(0.8)),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: isRecommended ? const Color(0xFF3B82F6) : const Color(0xFF6B7280), size: 20),
+            child: Icon(
+              icon, 
+              color: isSelected 
+                  ? const Color(0xFF2563EB) 
+                  : (isRecommended ? const Color(0xFF3B82F6) : const Color(0xFF6B7280)), 
+              size: 20,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
