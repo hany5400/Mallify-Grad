@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/apiService.dart';
 import 'editProfileScreen.dart';
@@ -196,7 +197,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                           image: hasAvatar
                               ? DecorationImage(
-                                  image: NetworkImage(ApiService.getImageUrl(avatar.toString())),
+                                  image: CachedNetworkImageProvider(ApiService.getImageUrl(avatar.toString())),
                                   fit: BoxFit.cover,
                                 )
                               : null,
@@ -448,17 +449,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: (item['category_image'] != null && item['category_image'].toString().isNotEmpty)
               ? ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    ApiService.getImageUrl(item['category_image'].toString()),
+                  child: CachedNetworkImage(
+                    imageUrl: ApiService.getImageUrl(item['category_image'].toString()),
                     fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(color: Colors.grey[100]),
+                    errorWidget: (context, url, error) => const Icon(Icons.shopping_bag_outlined, size: 24, color: Color(0xFF94A3B8)),
                   ),
                 )
               : (item['product_image'] != null && item['product_image'].toString().isNotEmpty)
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: Image.network(
-                        ApiService.getImageUrl(item['product_image'].toString()),
+                      child: CachedNetworkImage(
+                        imageUrl: ApiService.getImageUrl(item['product_image'].toString()),
                         fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(color: Colors.grey[100]),
+                        errorWidget: (context, url, error) => const Icon(Icons.shopping_bag_outlined, size: 24, color: Color(0xFF94A3B8)),
                       ),
                     )
                   : const Icon(Icons.shopping_bag_outlined, size: 24, color: Color(0xFF94A3B8)),
