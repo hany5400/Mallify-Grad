@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../widgets/safeNetworkImage.dart';
 import '../services/apiService.dart';
 import 'summaryScreen.dart';
 
@@ -371,8 +372,8 @@ class _AlternativesScreenState extends State<AlternativesScreen> {
                                       child: prod['category_image'] != null
                                         ? ClipRRect(
                                             borderRadius: BorderRadius.circular(16),
-                                            child: Image.network(
-                                              ApiService.getImageUrl(prod['category_image']),
+                                            child: SafeNetworkImage(
+                                              imageUrl: ApiService.getImageUrl(prod['category_image']),
                                               fit: BoxFit.cover,
                                             ),
                                           )

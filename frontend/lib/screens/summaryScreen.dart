@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/safeNetworkImage.dart';
 import '../services/apiService.dart';
 import 'main_screen.dart';
 
@@ -175,8 +176,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                     child: selected['category_image'] != null
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              ApiService.getImageUrl(selected['category_image']),
+                            child: SafeNetworkImage(
+                              imageUrl: ApiService.getImageUrl(selected['category_image']),
                               fit: BoxFit.cover,
                             ),
                           )
