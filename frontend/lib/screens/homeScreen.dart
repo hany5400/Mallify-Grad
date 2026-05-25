@@ -201,10 +201,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     'Discover Malls',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF2C3E50)),
                   ),
-                  Text(
-                    'See All',
-                    style: TextStyle(color: Color(0xFF4A90E2), fontWeight: FontWeight.w600),
-                  ),
                 ],
               ),
             ),
