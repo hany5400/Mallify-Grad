@@ -11,6 +11,7 @@ class ApiService {
     return {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'ngrok-skip-browser-warning': '69420',
       if (token != null) 'Authorization': 'Bearer $token',
     };
   }
@@ -41,6 +42,7 @@ class ApiService {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'ngrok-skip-browser-warning': '69420',
         },
         body: jsonEncode({'email': email, 'password': password}),
       );
@@ -62,6 +64,7 @@ class ApiService {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'ngrok-skip-browser-warning': '69420',
         },
         body: jsonEncode({
           'email': email,
@@ -87,6 +90,7 @@ class ApiService {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'ngrok-skip-browser-warning': '69420',
         },
         body: jsonEncode({
           'email': email,
@@ -118,6 +122,7 @@ class ApiService {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'ngrok-skip-browser-warning': '69420',
         },
         body: jsonEncode({
           'name': name,
@@ -167,6 +172,7 @@ class ApiService {
       final token = await getToken();
       var request = http.MultipartRequest('PATCH', Uri.parse('$baseUrl/users/avatar'));
       request.headers['Authorization'] = 'Bearer $token';
+      request.headers['ngrok-skip-browser-warning'] = '69420';
       request.files.add(await http.MultipartFile.fromPath('avatar', filePath));
 
       var streamedResponse = await request.send();
@@ -228,6 +234,7 @@ class ApiService {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'ngrok-skip-browser-warning': '69420',
         },
         body: jsonEncode({'email': email, 'password': password}),
       );
