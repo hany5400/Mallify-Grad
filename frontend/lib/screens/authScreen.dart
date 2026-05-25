@@ -447,8 +447,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                   backgroundColor: Colors.white,
                                   elevation: 0,
                                 ),
-                                child: Image.network(
-                                  'https://developers.google.com/static/identity/images/g-logo.png',
+                                child: Image.asset(
+                                  'assets/images/google_logo.png',
                                   height: 24,
                                 ),
                               ),
