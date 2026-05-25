@@ -71,11 +71,30 @@ class _AlternativesScreenState extends State<AlternativesScreen> {
         // Reset to original list
         _displayAlternatives[index] = List.from(_allAlternatives[index] ?? []);
       } else {
-        final keywords = query.trim().toLowerCase().split(RegExp(r"\s+"));
+        final keywords = query
+            .trim()
+            .toLowerCase()
+            .split(RegExp(r"\s+"))
+            .map((kw) => kw.replaceAll('-', ''))
+            .where((kw) => kw.isNotEmpty)
+            .toList();
+
         _displayAlternatives[index] = (_allAlternatives[index] ?? []).where((item) {
-          final pName = (item['product_name'] ?? '').toString().toLowerCase();
-          final cName = (item['product_category_name'] ?? '').toString().toLowerCase();
-          final sName = (item['store_name'] ?? '').toString().toLowerCase();
+          final pName = (item['product_name'] ?? '')
+              .toString()
+              .toLowerCase()
+              .replaceAll(' ', '')
+              .replaceAll('-', '');
+          final cName = (item['product_category_name'] ?? '')
+              .toString()
+              .toLowerCase()
+              .replaceAll(' ', '')
+              .replaceAll('-', '');
+          final sName = (item['store_name'] ?? '')
+              .toString()
+              .toLowerCase()
+              .replaceAll(' ', '')
+              .replaceAll('-', '');
           
           // Match all keywords (Smart Search logic)
           return keywords.every((kw) => 

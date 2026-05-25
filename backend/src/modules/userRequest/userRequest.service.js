@@ -142,14 +142,17 @@ export const findMatches = async (filters) => {
     if (search && search.trim() !== '') {
         const tokens = search.trim().toLowerCase().split(/\s+/);
         tokens.forEach(token => {
-            sql += ` AND (
-                LOWER(p.product_name) LIKE ? 
-                OR LOWER(pc.product_category_name) LIKE ? 
-                OR LOWER(s.store_name) LIKE ?
-                OR LOWER(s.brand_tier) LIKE ?
-            )`;
-            const pattern = `%${token}%`;
-            params.push(pattern, pattern, pattern, pattern);
+            const cleanToken = token.replace(/-/g, '');
+            if (cleanToken.length > 0) {
+                sql += ` AND (
+                    REPLACE(REPLACE(LOWER(p.product_name), ' ', ''), '-', '') LIKE ? 
+                    OR REPLACE(REPLACE(LOWER(pc.product_category_name), ' ', ''), '-', '') LIKE ? 
+                    OR REPLACE(REPLACE(LOWER(s.store_name), ' ', ''), '-', '') LIKE ?
+                    OR REPLACE(REPLACE(LOWER(s.brand_tier), ' ', ''), '-', '') LIKE ?
+                )`;
+                const pattern = `%${cleanToken}%`;
+                params.push(pattern, pattern, pattern, pattern);
+            }
         });
     }
 
