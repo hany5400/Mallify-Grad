@@ -247,7 +247,10 @@ class _UserHistoryScreenState extends State<UserHistoryScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             Text(
                               'Request #$displayIndex',
@@ -257,7 +260,6 @@ class _UserHistoryScreenState extends State<UserHistoryScreen> {
                                 color: Color(0xFF0F172A),
                               ),
                             ),
-                            const SizedBox(width: 8),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                               decoration: BoxDecoration(
