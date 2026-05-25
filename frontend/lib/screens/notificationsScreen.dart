@@ -104,6 +104,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final filteredItems = _filteredNotifications;
     
     return Scaffold(
+      backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,

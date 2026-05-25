@@ -79,6 +79,7 @@ class _UserHistoryScreenState extends State<UserHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text(

@@ -212,6 +212,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text('Checkout', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
