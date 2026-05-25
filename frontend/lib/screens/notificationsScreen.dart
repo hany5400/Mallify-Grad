@@ -104,9 +104,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final filteredItems = _filteredNotifications;
     
     return Scaffold(
-      backgroundColor: Colors.white,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
         actions: [
@@ -133,12 +133,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ),
           Positioned.fill(
             child: Container(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withOpacity(0.2),
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+          SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
@@ -204,7 +205,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               ),
             ],
           ),
-        ],
+        ),
+      ],
       ),
     );
   }
