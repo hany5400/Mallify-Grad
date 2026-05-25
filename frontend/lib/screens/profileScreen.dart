@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../widgets/safeNetworkImage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/apiService.dart';
 import 'editProfileScreen.dart';
@@ -195,21 +196,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           boxShadow: [
                             BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 20, offset: const Offset(0, 10))
                           ],
-                          image: hasAvatar
-                              ? DecorationImage(
-                                  image: CachedNetworkImageProvider(ApiService.getImageUrl(avatar.toString())),
-                                  fit: BoxFit.cover,
-                                )
-                              : null,
                         ),
-                        child: !hasAvatar
-                            ? Center(
+                        child: hasAvatar
+                            ? ClipOval(
+                                child: SafeNetworkImage(
+                                  imageUrl: ApiService.getImageUrl(avatar.toString()),
+                                  fit: BoxFit.cover,
+                                  width: 110,
+                                  height: 110,
+                                ),
+                              )
+                            : Center(
                                 child: Text(
                                   name.isNotEmpty ? name[0].toUpperCase() : 'U',
                                   style: const TextStyle(fontSize: 36, fontWeight: FontWeight.w900, color: Color(0xFF2563EB)),
                                 ),
-                              )
-                            : null,
+                              ),
                       ),
                       Positioned(
                         bottom: 0,
@@ -449,21 +451,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: (item['category_image'] != null && item['category_image'].toString().isNotEmpty)
               ? ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
+                  child: SafeNetworkImage(
                     imageUrl: ApiService.getImageUrl(item['category_image'].toString()),
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(color: Colors.grey[100]),
-                    errorWidget: (context, url, error) => const Icon(Icons.shopping_bag_outlined, size: 24, color: Color(0xFF94A3B8)),
+                    placeholder: Container(color: Colors.grey[100]),
+                    errorWidget: const Icon(Icons.shopping_bag_outlined, size: 24, color: Color(0xFF94A3B8)),
                   ),
                 )
               : (item['product_image'] != null && item['product_image'].toString().isNotEmpty)
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: CachedNetworkImage(
+                      child: SafeNetworkImage(
                         imageUrl: ApiService.getImageUrl(item['product_image'].toString()),
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(color: Colors.grey[100]),
-                        errorWidget: (context, url, error) => const Icon(Icons.shopping_bag_outlined, size: 24, color: Color(0xFF94A3B8)),
+                        placeholder: Container(color: Colors.grey[100]),
+                        errorWidget: const Icon(Icons.shopping_bag_outlined, size: 24, color: Color(0xFF94A3B8)),
                       ),
                     )
                   : const Icon(Icons.shopping_bag_outlined, size: 24, color: Color(0xFF94A3B8)),

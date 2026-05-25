@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../widgets/safeNetworkImage.dart';
 import '../services/apiService.dart';
 import 'authScreen.dart';
 import 'profileScreen.dart';
@@ -349,11 +350,11 @@ class _HomeScreenState extends State<HomeScreen> {
               // Image
               Positioned.fill(
                 child: imageUrl.isNotEmpty
-                    ? CachedNetworkImage(
+                    ? SafeNetworkImage(
                         imageUrl: imageUrl,
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(color: Colors.grey[100]),
-                        errorWidget: (context, url, error) => Container(color: Colors.grey[200], child: const Icon(Icons.image, size: 50)),
+                        placeholder: Container(color: Colors.grey[100]),
+                        errorWidget: Container(color: Colors.grey[200], child: const Icon(Icons.image, size: 50)),
                       )
                     : Container(color: Colors.grey[200], child: const Icon(Icons.image, size: 50)),
               ),
@@ -451,12 +452,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     topLeft: Radius.circular(24),
                     bottomLeft: Radius.circular(24),
                   ),
-                  image: storeImage.isNotEmpty
-                      ? DecorationImage(image: CachedNetworkImageProvider(storeImage), fit: BoxFit.cover)
-                      : null,
                   color: Colors.grey[100],
                 ),
-                child: storeImage.isEmpty ? const Icon(Icons.store, color: Colors.grey) : null,
+                child: storeImage.isNotEmpty
+                    ? ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(24),
+                          bottomLeft: Radius.circular(24),
+                        ),
+                        child: SafeNetworkImage(
+                          imageUrl: storeImage,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : const Icon(Icons.store, color: Colors.grey),
               ),
               // Right Side: Info
               Expanded(
@@ -738,18 +747,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildItemImage(dynamic item) {
     if (item['category_image'] != null && item['category_image'].toString().isNotEmpty) {
-      return CachedNetworkImage(
+      return SafeNetworkImage(
         imageUrl: ApiService.getImageUrl(item['category_image'].toString()),
         fit: BoxFit.cover,
-        placeholder: (context, url) => Container(color: Colors.grey[100]),
-        errorWidget: (context, url, error) => const Icon(Icons.shopping_bag_outlined, size: 14, color: Color(0xFF94A3B8)),
+        placeholder: Container(color: Colors.grey[100]),
+        errorWidget: const Icon(Icons.shopping_bag_outlined, size: 14, color: Color(0xFF94A3B8)),
       );
     } else if (item['product_image'] != null && item['product_image'].toString().isNotEmpty) {
-      return CachedNetworkImage(
+      return SafeNetworkImage(
         imageUrl: ApiService.getImageUrl(item['product_image'].toString()),
         fit: BoxFit.cover,
-        placeholder: (context, url) => Container(color: Colors.grey[100]),
-        errorWidget: (context, url, error) => const Icon(Icons.shopping_bag_outlined, size: 14, color: Color(0xFF94A3B8)),
+        placeholder: Container(color: Colors.grey[100]),
+        errorWidget: const Icon(Icons.shopping_bag_outlined, size: 14, color: Color(0xFF94A3B8)),
       );
     }
     return const Icon(Icons.shopping_bag_outlined, size: 14, color: Color(0xFF94A3B8));
