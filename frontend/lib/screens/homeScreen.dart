@@ -256,15 +256,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  children: _requestHistory.take(2).toList().asMap().entries.map((entry) {
-                    final localIndex = entry.key + 1;
-                    final req = entry.value;
+              SizedBox(
+                height: 155,
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: _requestHistory.length,
+                  itemBuilder: (context, index) {
+                    final localIndex = index + 1;
+                    final req = _requestHistory[index];
                     final absoluteIndex = _requestHistory.length - _requestHistory.indexOf(req);
                     return _buildHomeRequestCard(localIndex, absoluteIndex, req);
-                  }).toList(),
+                  },
                 ),
               ),
             ],
@@ -560,7 +564,8 @@ class _HomeScreenState extends State<HomeScreen> {
       : 'Recently';
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      width: 300,
+      margin: const EdgeInsets.only(right: 16, bottom: 8, top: 4),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
