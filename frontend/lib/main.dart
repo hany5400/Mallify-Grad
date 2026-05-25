@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'screens/landingScreen.dart';
 import 'screens/authScreen.dart';
@@ -13,9 +14,25 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 void main() async {
-  HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: 'AIzaSyBR61taCBHITCGax84uX4CV6jwMnI80AQc',
+        appId: '1:157816088543:web:8c6f9d46a4aa64a47ac66a',
+        messagingSenderId: '157816088543',
+        projectId: 'mallify-82b01',
+        authDomain: 'mallify-82b01.firebaseapp.com',
+        storageBucket: 'mallify-82b01.firebasestorage.app',
+        measurementId: 'G-KDLKDJ42HT',
+      ),
+    );
+  } else {
+    HttpOverrides.global = MyHttpOverrides();
+    await Firebase.initializeApp();
+  }
+
   runApp(MyApp());
 }
 

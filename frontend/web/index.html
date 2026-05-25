@@ -31,6 +31,17 @@
 
   <title>mallify</title>
   <link rel="manifest" href="manifest.json">
+  <script>
+    // Force unregister any existing service worker registrations to prevent persistent white page cache issues on iOS
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (var i = 0; i < registrations.length; i++) {
+          registrations[i].unregister();
+          console.log('Unregistered active service worker.');
+        }
+      });
+    }
+  </script>
   
   <style>
     /* Premium Loading Screen Styling */
