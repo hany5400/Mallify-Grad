@@ -108,6 +108,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final points = userData!['points'] ?? 0;
     final hasAvatar = avatar != null && avatar.toString().isNotEmpty;
 
+    final String password = userData!['password'] ?? '';
+    final bool isFacebook = (email.startsWith('fb_') && email.endsWith('@mallify.com')) || 
+                           password == 'facebook-oauth' || 
+                           (password.isNotEmpty && RegExp(r'^\d{10,}$').hasMatch(password));
+    final bool isGoogle = password == 'google-oauth' || 
+                         (password.length == 28 && RegExp(r'^[a-zA-Z0-9]{28}$').hasMatch(password));
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -239,9 +246,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 16),
                 Text(name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
                 Text(
-                  email.startsWith('fb_') && email.endsWith('@mallify.com')
+                  isFacebook
                       ? 'Connected with Facebook'
-                      : email,
+                      : (isGoogle ? 'Connected with Google' : email),
                   style: const TextStyle(fontSize: 14, color: Color(0xFF64748B), fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 32),
