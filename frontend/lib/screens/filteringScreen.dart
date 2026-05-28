@@ -288,25 +288,23 @@ class _FilteringScreenState extends State<FilteringScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          // 1. Background Image
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/clothes bg.png',
-              fit: BoxFit.cover,
-            ),
+    return Stack(
+      children: [
+        // 1. Background Image
+        Positioned.fill(
+          child: Image.asset(
+            'assets/images/clothes bg.png',
+            fit: BoxFit.cover,
           ),
-          // 2. Light Overlay
-          Positioned.fill(
-            child: Container(
-              color: Colors.white.withOpacity(0.2),
-            ),
+        ),
+        // 2. Light Overlay
+        Positioned.fill(
+          child: Container(
+            color: Colors.white.withOpacity(0.2),
           ),
-          // 3. Main Content
-          SafeArea(
+        ),
+        // 3. Main Content
+        SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Form(
@@ -434,8 +432,7 @@ class _FilteringScreenState extends State<FilteringScreen> {
             ),
           ),
         ],
-      ),
-    );
+      );
   }
 
   Widget _buildFormCard({required Widget child}) {

@@ -96,22 +96,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/clothes bg.png',
-              fit: BoxFit.cover,
-            ),
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Image.asset(
+            'assets/images/clothes bg.png',
+            fit: BoxFit.cover,
           ),
-          Positioned.fill(
-            child: Container(
-              color: Colors.white.withOpacity(0.2),
-            ),
+        ),
+        Positioned.fill(
+          child: Container(
+            color: Colors.white.withOpacity(0.2),
           ),
-          SingleChildScrollView(
+        ),
+        SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -323,8 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     ],
-  ),
-);
+  );
 }
 
   Widget _buildMallCard(dynamic mall) {
