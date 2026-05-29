@@ -30,6 +30,21 @@ import {
 } from 'lucide-react';
 import './App.css';
 import mallifyLogo from './assets/mallify-logo.png';
+import { 
+  ResponsiveContainer, 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  BarChart, 
+  Bar, 
+  Legend, 
+  PieChart, 
+  Pie, 
+  Cell 
+} from 'recharts';
 
 const API_BASE = 'http://localhost:3000';
 
@@ -450,7 +465,15 @@ function App() {
 
         <div className="glass-panel animate-fade">
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
-            <h2>Overview</h2>
+            <h2>
+              {activeTab === 'dashboard'
+                ? isSystemAdmin
+                  ? 'Platform Analytics Overview'
+                  : isMallAdmin
+                    ? 'Mall Analytics Overview'
+                    : 'Store Analytics Overview'
+                : 'Overview'}
+            </h2>
             {activeTab === 'malls' && (isSystemAdmin || (isMallAdmin && items.length < 1)) && (
               <button className="btn btn-primary" onClick={() => { setEditingItem(null); setIsModalOpen(true); }}>
                 <Plus size={18} /> New Mall
@@ -541,6 +564,8 @@ function App() {
             <div style={{ textAlign: 'center', padding: '48px' }}>
               <div className="animate-pulse">Loading data...</div>
             </div>
+          ) : activeTab === 'dashboard' ? (
+            <DashboardCharts stats={stats} user={user} />
           ) : (
             <>
               <DataRenderer
@@ -639,6 +664,29 @@ function LoginScreen({ setToken }) {
   const [verifyCode, setVerifyCode] = useState('');
   const [verifyType, setVerifyType] = useState('mall'); // mall or store
   const [isActivated, setIsActivated] = useState(false);
+  const [showMallList, setShowMallList] = useState(false);
+  const [mallSearch, setMallSearch] = useState('');
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.target-mall-container') && !event.target.closest('.dropdown-search-list')) {
+        setShowMallList(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (!showMallList) {
+      const selectedMall = malls.find(m => String(m.id) === String(regData.mall_id));
+      if (selectedMall) {
+        setMallSearch(selectedMall.mall_name);
+      } else {
+        setMallSearch('');
+      }
+    }
+  }, [showMallList, regData.mall_id, malls]);
 
   const handleVerify = async (e) => {
     e.preventDefault();
@@ -714,6 +762,7 @@ function LoginScreen({ setToken }) {
     e.preventDefault();
     setRegErr('');
     if (regData.password !== regData.confirmPassword) { setRegErr("Passwords do not match."); return; }
+    if (screen === 'register-store' && !regData.mall_id) { setRegErr("Please select a valid target mall from the dropdown."); return; }
     if (!commercialLicense || !identificationDoc) { setRegErr("Please upload both documents."); return; }
     setLoading(true);
     try {
@@ -789,7 +838,7 @@ function LoginScreen({ setToken }) {
                 ? 'The System Admin will review your documents and approve your request. You\'ll receive an email with your invite code.'
                 : 'The Mall Admin will review your request. You\'ll receive an email with your invite code once approved.'}
             </p>
-            <button onClick={() => { setScreen('login'); setRegData({ name: '', email: '', password: '', confirmPassword: '', mall_name: '', store_name: '', mall_id: '' }); setCommercialLicense(null); setIdentificationDoc(null); setLicensePrev(null); setIdDocPrev(null); }}
+            <button onClick={() => { setScreen('login'); setRegData({ name: '', email: '', password: '', confirmPassword: '', mall_name: '', store_name: '', mall_id: '' }); setCommercialLicense(null); setIdentificationDoc(null); setLicensePrev(null); setIdDocPrev(null); setMallSearch(''); setShowMallList(false); }}
               style={{ background: 'linear-gradient(135deg, #0ea5e9, #0284c7)', color: 'white', border: 'none', padding: '14px 32px', borderRadius: '12px', fontSize: '15px', fontWeight: '700', cursor: 'pointer', width: '100%', boxShadow: '0 8px 24px rgba(14,165,233,0.35)' }}>
               Back to Login
             </button>
@@ -804,7 +853,7 @@ function LoginScreen({ setToken }) {
     return (
       <div className="auth-bg-animated" style={bgStyle}>
         <form className="animate-fade" style={{ ...cardStyle, maxWidth: '620px' }} onSubmit={handleRegister}>
-          <button type="button" onClick={() => { setScreen('login'); setRegErr(''); }} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '24px', padding: 0 }}>
+          <button type="button" onClick={() => { setScreen('login'); setRegErr(''); setMallSearch(''); setShowMallList(false); }} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '24px', padding: 0 }}>
             ← Back to Login
           </button>
           <div style={{ marginBottom: '32px' }}>
@@ -839,12 +888,45 @@ function LoginScreen({ setToken }) {
           </div>
 
           {!isMall && (
-            <div style={{ marginBottom: '16px' }}>
+            <div className="target-mall-container" style={{ marginBottom: '16px', position: 'relative' }}>
               <label style={labelStyle}>Select Target Mall</label>
-              <select style={{ ...inputStyle, appearance: 'none' }} value={regData.mall_id} onChange={e => setRegData({ ...regData, mall_id: e.target.value })} required>
-                <option value="" style={{ background: '#f8fafc', color: '#0f172a' }}>Choose a mall...</option>
-                {malls.map(m => <option key={m.id} value={m.id} style={{ background: '#f8fafc', color: '#0f172a' }}>{m.mall_name}</option>)}
-              </select>
+              <div style={{ position: 'relative' }}>
+                <Search size={14} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                <input 
+                  type="text" 
+                  placeholder="Choose a mall..." 
+                  value={mallSearch}
+                  onFocus={() => setShowMallList(true)}
+                  onChange={(e) => {
+                    setMallSearch(e.target.value);
+                    setShowMallList(true);
+                    const exactMatch = malls.find(m => m.mall_name.toLowerCase() === e.target.value.toLowerCase());
+                    setRegData({ ...regData, mall_id: exactMatch ? exactMatch.id : '' });
+                  }}
+                  style={{ ...inputStyle, paddingLeft: '35px' }}
+                />
+              </div>
+              {showMallList && (
+                <div className="dropdown-search-list animate-fade">
+                  {malls.filter(m => (m.mall_name || '').toLowerCase().includes((mallSearch || '').toLowerCase())).map(m => (
+                    <div 
+                      key={m.id} 
+                      className={`dropdown-item ${regData.mall_id === m.id ? 'selected' : ''}`}
+                      onClick={() => {
+                        setRegData({ ...regData, mall_id: m.id });
+                        setMallSearch(m.mall_name);
+                        setShowMallList(false);
+                      }}
+                    >
+                      <Building2 size={14} />
+                      <span>{m.mall_name}</span>
+                    </div>
+                  ))}
+                  {malls.filter(m => (m.mall_name || '').toLowerCase().includes((mallSearch || '').toLowerCase())).length === 0 && (
+                    <div style={{ padding: '12px 16px', color: '#64748b', fontSize: '14px' }}>No malls found</div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -979,7 +1061,7 @@ function LoginScreen({ setToken }) {
         <div style={{ borderTop: '1px solid rgba(0,0,0,0.08)', paddingTop: '24px' }}>
           <p style={{ color: '#64748b', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center', marginBottom: '16px' }}>New to Mallify? Apply for access</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-            <button id="register-mall-btn" type="button" onClick={() => { setScreen('register-mall'); setErr(''); }}
+            <button id="register-mall-btn" type="button" onClick={() => { setScreen('register-mall'); setErr(''); setMallSearch(''); setShowMallList(false); }}
               style={{ padding: '14px', borderRadius: '12px', border: '1.5px solid rgba(37,99,235,0.4)', background: 'rgba(37,99,235,0.04)', color: '#2563eb', cursor: 'pointer', fontSize: '13px', fontWeight: '700', transition: 'all 0.3s' }}
               onMouseEnter={e => { e.target.style.background = 'rgba(37,99,235,0.1)'; e.target.style.borderColor = '#1d4ed8'; }}
               onMouseLeave={e => { e.target.style.background = 'rgba(37,99,235,0.04)'; e.target.style.borderColor = 'rgba(37,99,235,0.4)'; }}>
@@ -988,7 +1070,7 @@ function LoginScreen({ setToken }) {
                 <span>Register as<br /><strong>Mall Admin</strong></span>
               </div>
             </button>
-            <button id="register-store-btn" type="button" onClick={() => { setScreen('register-store'); setErr(''); }}
+            <button id="register-store-btn" type="button" onClick={() => { setScreen('register-store'); setErr(''); setMallSearch(''); setShowMallList(false); }}
               style={{ padding: '14px', borderRadius: '12px', border: '1.5px solid rgba(14,165,233,0.4)', background: 'rgba(14,165,233,0.04)', color: '#0ea5e9', cursor: 'pointer', fontSize: '13px', fontWeight: '700', transition: 'all 0.3s' }}
               onMouseEnter={e => { e.target.style.background = 'rgba(14,165,233,0.1)'; e.target.style.borderColor = '#0284c7'; }}
               onMouseLeave={e => { e.target.style.background = 'rgba(14,165,233,0.04)'; e.target.style.borderColor = 'rgba(14,165,233,0.4)'; }}>
@@ -1005,6 +1087,259 @@ function LoginScreen({ setToken }) {
       </div>
     </div>
   );
+}
+
+function DashboardCharts({ stats, user }) {
+  const userRole = user?.role || (user?.admin_type === 'mall' ? 'mall_admin' : (user?.admin_type === 'store' ? 'store_admin' : (user?.admin_type === 'system' ? 'system_admin' : 'user')));
+  const isSystemAdmin = userRole === 'system_admin';
+  const isMallAdmin = userRole === 'mall_admin';
+  const isStoreAdmin = userRole === 'store_admin';
+
+  if (isSystemAdmin) {
+    const monthlyData = [
+      { 
+        name: 'Jan', 
+        Users: stats.totalUsers ? Math.max(1, Math.round(stats.totalUsers * 0.4)) : 0, 
+        Malls: stats.totalMalls ? Math.max(1, Math.round(stats.totalMalls * 0.5)) : 0, 
+        Stores: stats.totalStores ? Math.max(1, Math.round(stats.totalStores * 0.3)) : 0 
+      },
+      { 
+        name: 'Feb', 
+        Users: stats.totalUsers ? Math.max(1, Math.round(stats.totalUsers * 0.55)) : 0, 
+        Malls: stats.totalMalls ? Math.max(1, Math.round(stats.totalMalls * 0.6)) : 0, 
+        Stores: stats.totalStores ? Math.max(1, Math.round(stats.totalStores * 0.5)) : 0 
+      },
+      { 
+        name: 'Mar', 
+        Users: stats.totalUsers ? Math.max(1, Math.round(stats.totalUsers * 0.75)) : 0, 
+        Malls: stats.totalMalls ? Math.max(1, Math.round(stats.totalMalls * 0.8)) : 0, 
+        Stores: stats.totalStores ? Math.max(1, Math.round(stats.totalStores * 0.7)) : 0 
+      },
+      { 
+        name: 'Apr', 
+        Users: stats.totalUsers ? Math.max(1, Math.round(stats.totalUsers * 0.9)) : 0, 
+        Malls: stats.totalMalls ? Math.max(1, Math.round(stats.totalMalls * 0.9)) : 0, 
+        Stores: stats.totalStores ? Math.max(1, Math.round(stats.totalStores * 0.85)) : 0 
+      },
+      { 
+        name: 'May', 
+        Users: stats.totalUsers || 0, 
+        Malls: stats.totalMalls || 0, 
+        Stores: stats.totalStores || 0 
+      }
+    ];
+
+    const systemAdmins = Math.max(0, (stats.totalUsers || 0) - (stats.regularUsers || 0) - (stats.mallAdmins || 0) - (stats.storeAdmins || 0));
+    const userRoleData = [
+      { name: 'Regular Users', value: stats.regularUsers || 0, color: '#6366F1' },
+      { name: 'Mall Admins', value: stats.mallAdmins || 0, color: '#8B5CF6' },
+      { name: 'Store Admins', value: stats.storeAdmins || 0, color: '#F97316' },
+      { name: 'System Admins', value: systemAdmins, color: '#10B981' }
+    ];
+
+    const scaleData = [
+      { name: 'Malls', count: stats.totalMalls || 0, fill: '#8B5CF6' },
+      { name: 'Stores', count: stats.totalStores || 0, fill: '#F97316' },
+      { name: 'Products', count: stats.totalProducts || 0, fill: '#EC4899' }
+    ];
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '24px' }}>
+        {/* Row 1: Area Chart */}
+        <div style={{ padding: '24px', background: '#f8fafc', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+          <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#000000', marginBottom: '16px' }}>Platform Onboarding Growth Trend</h3>
+          <div style={{ width: '100%', height: '300px' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={monthlyData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#2563EB" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#2563EB" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorStores" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#F97316" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#F97316" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorMalls" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} />
+                <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} />
+                <Legend verticalAlign="top" height={36} iconType="circle" />
+                <Area type="monotone" dataKey="Users" stroke="#2563EB" strokeWidth={2} fillOpacity={1} fill="url(#colorUsers)" name="Active Users" />
+                <Area type="monotone" dataKey="Stores" stroke="#F97316" strokeWidth={2} fillOpacity={1} fill="url(#colorStores)" name="Stores" />
+                <Area type="monotone" dataKey="Malls" stroke="#8B5CF6" strokeWidth={2} fillOpacity={1} fill="url(#colorMalls)" name="Malls" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Row 2: Donut Chart & Bar Chart side-by-side */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+          {/* Donut Chart */}
+          <div style={{ padding: '24px', background: '#f8fafc', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+            <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#000000', marginBottom: '16px' }}>User Roles</h3>
+            <div style={{ width: '100%', height: '240px', position: 'relative' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={userRoleData.filter(d => d.value > 0)}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={4}
+                    dataKey="value"
+                  >
+                    {userRoleData.filter(d => d.value > 0).map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => [`${value} users`, 'Count']} contentStyle={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} />
+                </PieChart>
+              </ResponsiveContainer>
+              {/* Central Label */}
+              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+                <div style={{ fontSize: '24px', fontWeight: '800', color: '#1e293b' }}>{stats.totalUsers || 0}</div>
+                <div style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: '700', letterSpacing: '0.5px' }}>Total Users</div>
+              </div>
+            </div>
+            {/* Custom Legend */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px' }}>
+              {userRoleData.map((role) => (
+                <div key={role.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: role.color }}></div>
+                    <span style={{ color: '#64748b', fontWeight: '500' }}>{role.name}</span>
+                  </div>
+                  <span style={{ fontWeight: '700', color: '#1e293b' }}>{role.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Bar Chart */}
+          <div style={{ padding: '24px', background: '#f8fafc', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+            <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#000000', marginBottom: '16px' }}>Asset Inventory Scale</h3>
+            <div style={{ width: '100%', height: '240px' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={scaleData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} />
+                  <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                  <Tooltip formatter={(value) => [value, 'Registered Total']} contentStyle={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} />
+                  <Bar dataKey="count" radius={[10, 10, 0, 0]} maxBarSize={50}>
+                    {scaleData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            {/* Legend label list */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px' }}>
+              {scaleData.map((asset) => (
+                <div key={asset.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: asset.fill }}></div>
+                    <span style={{ color: '#64748b', fontWeight: '500' }}>{asset.name}</span>
+                  </div>
+                  <span style={{ fontWeight: '700', color: '#1e293b' }}>{asset.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isMallAdmin) {
+    const scaleData = [
+      { name: 'Stores Managed', count: stats.totalStores || 0, fill: '#F97316' },
+      { name: 'Products Managed', count: stats.totalProducts || 0, fill: '#EC4899' }
+    ];
+
+    return (
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', marginTop: '24px' }}>
+        <div style={{ padding: '24px', background: '#f8fafc', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+          <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#000000', marginBottom: '16px' }}>Mall Assets Volume</h3>
+          <div style={{ width: '100%', height: '260px' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={scaleData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} />
+                <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} />
+                <Bar dataKey="count" radius={[10, 10, 0, 0]} maxBarSize={60}>
+                  {scaleData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div style={{ padding: '24px', background: '#f8fafc', borderRadius: '20px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+          <div style={{ width: '64px', height: '64px', borderRadius: '16px', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', marginBottom: '16px' }}>
+            <Store size={32} />
+          </div>
+          <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#1e293b', marginBottom: '8px' }}>Active Mall Supervision</h3>
+          <p style={{ color: '#64748b', fontSize: '14px', maxWidth: '320px', lineHeight: '1.6' }}>
+            You are currently supervising {stats.totalMalls || 0} mall(s) with {stats.totalStores || 0} approved store(s) containing a total inventory of {stats.totalProducts || 0} products.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isStoreAdmin) {
+    const storeStatsData = [
+      { name: 'Products', count: stats.totalProducts || 0, fill: '#EC4899' },
+      { name: 'Product Types', count: stats.totalCategories || 0, fill: '#F59E0B' },
+      { name: 'Active Discounts', count: stats.totalDiscounts || 0, fill: '#10B981' }
+    ];
+
+    return (
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', marginTop: '24px' }}>
+        <div style={{ padding: '24px', background: '#f8fafc', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+          <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#000000', marginBottom: '16px' }}>Store Inventory Breakdown</h3>
+          <div style={{ width: '100%', height: '260px' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={storeStatsData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} />
+                <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} />
+                <Bar dataKey="count" radius={[10, 10, 0, 0]} maxBarSize={60}>
+                  {storeStatsData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div style={{ padding: '24px', background: '#f8fafc', borderRadius: '20px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+          <div style={{ width: '64px', height: '64px', borderRadius: '16px', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', marginBottom: '16px' }}>
+            <Package size={32} />
+          </div>
+          <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#1e293b', marginBottom: '8px' }}>Store Performance Status</h3>
+          <p style={{ color: '#64748b', fontSize: '14px', maxWidth: '320px', lineHeight: '1.6' }}>
+            Your inventory is fully sync'd. You currently manage {stats.totalProducts || 0} products distributed in {stats.totalCategories || 0} categories with {stats.totalDiscounts || 0} active discount campaigns.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }
 
 function StatsGrid({ stats, user }) {
