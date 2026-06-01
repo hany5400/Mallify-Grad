@@ -460,6 +460,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: SafeNetworkImage(
                           imageUrl: storeImage,
                           fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
                         ),
                       )
                     : const Icon(Icons.store, color: Colors.grey),
