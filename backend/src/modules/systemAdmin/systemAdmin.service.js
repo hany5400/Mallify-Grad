@@ -5,11 +5,15 @@ import { createAdmin } from "../../db/models/admins.model.js";
 import db from "../../db/connection.js";
 import nodemailer from "nodemailer";
 
-export const fetchAllPendingRequests = async (mallId = null) => {
-    const storeRequests = await getPendingStoreRequests(mallId);
+export const fetchAllPendingRequests = async (mallId = null, role = null) => {
+    let storeRequests = [];
+    let mallRequests = [];
     
-    // System admins see all mall requests, Mall admins see none (they only manage their own stores)
-    const mallRequests = mallId ? [] : await getPendingMallRequests();
+    if (role === 'system_admin') {
+        mallRequests = await getPendingMallRequests();
+    } else {
+        storeRequests = await getPendingStoreRequests(mallId);
+    }
     
     return {
         store: storeRequests,

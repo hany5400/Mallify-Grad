@@ -118,16 +118,18 @@ function App() {
           const rrRes = await axios.get(rrUrl, config);
           if (rrRes.data.ok) {
             const { store, mall } = rrRes.data.data;
-            // Combine them and add a 'type' field to distinguish
-            const combined = [
-              ...store.map(r => ({ ...r, request_type: 'store' })),
-              ...mall.map(r => ({ ...r, request_type: 'mall' }))
-            ];
-            setItems(combined);
+            let filtered = [];
+            if (isSystemAdmin) {
+              filtered = mall.map(r => ({ ...r, request_type: 'mall' }));
+            } else {
+              filtered = store.map(r => ({ ...r, request_type: 'store' }));
+            }
+            setItems(filtered);
           } else {
             setItems([]);
           }
           break;
+
         case 'mall-overview':
           const moRes = await axios.get(`${API_BASE}/system-admin/mall-admins-overview${currentSearch ? `?search=${currentSearch}` : ''}`, config);
           setItems(moRes.data.ok ? moRes.data.data : []);

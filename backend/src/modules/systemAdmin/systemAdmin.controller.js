@@ -13,7 +13,7 @@ import db from '../../db/connection.js';
 
 const router = express.Router();
 
-// Get all pending requests (System Admin sees all, Mall Admin sees their stores only)
+// Get all pending requests (System Admin sees mall requests, Mall Admin sees store requests for their mall)
 router.get('/pending-requests', authenticateUser, authorizeRole(['system_admin', 'mall_admin']), async (req, res) => {
     try {
         let mallId = null;
@@ -23,7 +23,7 @@ router.get('/pending-requests', authenticateUser, authorizeRole(['system_admin',
             mallId = malls[0].mall_id;
         }
         
-        const requests = await fetchAllPendingRequests(mallId);
+        const requests = await fetchAllPendingRequests(mallId, req.user.role);
         res.json({ ok: true, data: requests });
     } catch (error) {
         res.status(500).json({ ok: false, error: error.message });
