@@ -140,7 +140,7 @@ function StoreAdminDashboard({ user, onLogout }) {
       <main className="main-content">
         <header className="header">
           <div className="header-title">
-            <h1 style={{ textTransform: 'capitalize' }}>{activeTab.replace('-', ' ')}</h1>
+            <h1 className="capitalize-title">{activeTab.replace('-', ' ')}</h1>
           </div>
           {activeTab !== 'dashboard' && (
             <div className="search-bar">
@@ -156,76 +156,46 @@ function StoreAdminDashboard({ user, onLogout }) {
         </header>
 
         {activeTab === 'dashboard' && stats.assignedMall && (
-          <div className="mall-hero-modern animate-fade" style={{
-            marginBottom: '40px',
-            background: 'white',
-            borderRadius: '24px',
-            padding: '24px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '40px',
-            boxShadow: '0 10px 40px rgba(0,0,0,0.04)',
-            border: '1px solid rgba(0,0,0,0.05)',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%)', borderRadius: '50%' }}></div>
+          <div className="mall-hero-modern animate-fade">
+            <div className="hero-radial-glow glow-primary"></div>
 
-            <div style={{
-              width: '320px',
-              height: '200px',
-              flexShrink: 0,
-              borderRadius: '20px',
-              overflow: 'hidden',
-              boxShadow: '0 20px 40px rgba(0,0,0,0.12)',
-              border: '4px solid white'
-            }}>
+            <div className="hero-image-wrapper">
               {stats.assignedMallImage ? (
-                <img src={`${API_BASE}/${stats.assignedMallImage}`} alt="Mall" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src={`${API_BASE}/${stats.assignedMallImage}`} alt="Mall" className="hero-img-cover" />
               ) : (
-                <div style={{ width: '100%', height: '100%', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <ImageIcon size={48} style={{ opacity: 0.1 }} />
+                <div className="hero-img-placeholder">
+                  <ImageIcon size={48} className="img-placeholder-icon" />
                 </div>
               )}
             </div>
 
-            <div style={{ flex: 1, position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                <span style={{
-                  padding: '6px 14px',
-                  background: 'var(--primary)',
-                  color: 'white',
-                  borderRadius: '10px',
-                  fontSize: '10px',
-                  fontWeight: '800',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1.5px',
-                  boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
-                }}>
+            <div className="hero-content-section">
+              <div className="hero-badge-row">
+                <span className="hero-primary-badge">
                   Primary Mall
                 </span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <div style={{ width: '8px', height: '8px', background: '#10B981', borderRadius: '50%', animation: 'pulse 2s infinite' }}></div>
-                  <span style={{ fontSize: '12px', fontWeight: '600', color: '#10B981' }}>Active Connection</span>
+                <div className="flex-center-gap6">
+                  <div className="connection-pulse-dot"></div>
+                  <span className="connection-pulse-text">Active Connection</span>
                 </div>
               </div>
 
-              <h1 style={{ fontSize: '42px', fontWeight: '900', color: '#1e293b', marginBottom: '12px', letterSpacing: '-1.5px', lineHeight: '1' }}>
+              <h1 className="hero-mall-title">
                 {stats.assignedMall}
               </h1>
 
-              <p style={{ color: '#64748b', fontSize: '16px', maxWidth: '480px', lineHeight: '1.6', marginBottom: '24px' }}>
+              <p className="hero-mall-desc">
                 Welcome back! Your store is currently integrated with the {stats.assignedMall}
               </p>
 
-              <div style={{ display: 'flex', gap: '32px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ width: '36px', height: '36px', background: '#f0fdf4', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Shield size={18} style={{ color: '#10B981' }} />
+              <div className="flex-gap32">
+                <div className="flex-center-gap10">
+                  <div className="hero-status-icon-box">
+                    <Shield size={18} className="hero-status-shield-icon" />
                   </div>
                   <div>
-                    <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: '700', textTransform: 'uppercase' }}>Status</div>
-                    <div style={{ fontSize: '14px', fontWeight: '700', color: '#1e293b' }}>Official Partner</div>
+                    <div className="hero-status-label">Status</div>
+                    <div className="hero-status-value">Official Partner</div>
                   </div>
                 </div>
               </div>
@@ -235,28 +205,19 @@ function StoreAdminDashboard({ user, onLogout }) {
 
         {/* Mall Hero Call-To-Action if not assigned to any mall */}
         {activeTab === 'dashboard' && !stats.assignedMall && (
-          <div className="mall-hero-modern animate-fade" style={{
-            marginBottom: '40px',
-            background: 'white',
-            borderRadius: '24px',
-            padding: '32px',
-            boxShadow: '0 10px 40px rgba(0,0,0,0.04)',
-            border: '1px solid rgba(0,0,0,0.05)',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(14, 165, 233, 0.08) 0%, transparent 70%)', borderRadius: '50%' }}></div>
+          <div className="mall-hero-modern unassigned animate-fade">
+            <div className="hero-radial-glow glow-sky"></div>
             
-            <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(14, 165, 233, 0.15)', border: '1px solid rgba(14, 165, 233, 0.3)', borderRadius: '20px', padding: '6px 14px', marginBottom: '16px' }}>
-                <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', color: '#0ea5e9' }}>
+            <div className="hero-unassigned-content">
+              <div className="hero-unassigned-badge-wrapper">
+                <span className="hero-unassigned-badge">
                   No Mall Assignment
                 </span>
               </div>
-              <h2 style={{ fontSize: '32px', fontWeight: '800', color: '#1e293b', marginBottom: '12px' }}>
+              <h2 className="hero-unassigned-title">
                 Connect Your Store to a Mall
               </h2>
-              <p style={{ color: '#64748b', fontSize: '15px', maxWidth: '600px', lineHeight: '1.6', marginBottom: '24px' }}>
+              <p className="hero-unassigned-desc">
                 Currently, your store is not assigned to any mall. In order to list your products and gain visibility, you must request a connection with one of the registered malls.
               </p>
               <button 
@@ -273,15 +234,15 @@ function StoreAdminDashboard({ user, onLogout }) {
 
         {globalError && (
           <div className="global-notification animate-fade">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <X size={20} onClick={() => setGlobalError(null)} style={{ cursor: 'pointer' }} />
+            <div className="notification-inner">
+              <X size={20} onClick={() => setGlobalError(null)} className="close-icon" />
               <p>{globalError}</p>
             </div>
           </div>
         )}
 
         <div className="glass-panel animate-fade">
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
+          <div className="panel-header-row">
             <h2>
               {activeTab === 'dashboard' ? 'Store Analytics Overview' : 'Overview'}
             </h2>
@@ -332,7 +293,7 @@ function StoreAdminDashboard({ user, onLogout }) {
           </div>
 
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '48px' }}>
+            <div className="loading-container">
               <div className="animate-pulse">Loading data...</div>
             </div>
           ) : activeTab === 'dashboard' ? (
@@ -354,22 +315,22 @@ function StoreAdminDashboard({ user, onLogout }) {
 
       {assignmentModalData && (
         <div className="modal-overlay">
-          <div className="modal-content animate-fade" style={{ maxWidth: '450px', maxHeight: '90vh', overflowY: 'auto' }}>
+          <div className="modal-content assignment-modal-content animate-fade">
             {isAssignmentSuccess ? (
-              <div className="animate-fade" style={{ textAlign: 'center', padding: '40px 20px' }}>
-                <div style={{ background: '#D1FAE5', color: '#10B981', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+              <div className="assignment-success-container animate-fade">
+                <div className="assignment-success-icon-box">
                   <Check size={48} />
                 </div>
-                <h2 style={{ marginBottom: '16px' }}>Request Sent!</h2>
-                <p style={{ color: 'var(--text-main)', opacity: 0.9 }}>The mall admin will review your assignment request.</p>
+                <h2 className="assignment-success-title">Request Sent!</h2>
+                <p className="assignment-success-text">The mall admin will review your assignment request.</p>
               </div>
             ) : (
               <>
-                <div className="panel-header" style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="assignment-panel-header">
                   <h2>Select Store to Assign</h2>
-                  <button className="btn-close" onClick={() => setAssignmentModalData(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={24} /></button>
+                  <button className="btn-close-transparent" onClick={() => setAssignmentModalData(null)}><X size={24} /></button>
                 </div>
-                <div className="form-group" style={{ marginBottom: '32px' }}>
+                <div className="form-group form-group-margin32">
                   <label>Which of your stores do you want to request assignment for?</label>
                   <select
                     value={selectedStoreId}
@@ -381,7 +342,7 @@ function StoreAdminDashboard({ user, onLogout }) {
                     ))}
                   </select>
                 </div>
-                <div style={{ display: 'flex', gap: '16px', justifyContent: 'flex-end', borderTop: '1px solid var(--border)', paddingTop: '24px' }}>
+                <div className="modal-footer-row">
                   <button className="btn btn-outline" onClick={() => setAssignmentModalData(null)}>Cancel</button>
                   <button className="btn btn-primary" onClick={submitAssignment}>Send Request</button>
                 </div>

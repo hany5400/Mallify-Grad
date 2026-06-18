@@ -107,7 +107,7 @@ function SystemAdminDashboard({ user, onLogout }) {
       <main className="main-content">
         <header className="header">
           <div className="header-title">
-            <h1 style={{ textTransform: 'capitalize' }}>{activeTab.replace('-', ' ')}</h1>
+            <h1 className="capitalize-title">{activeTab.replace('-', ' ')}</h1>
           </div>
           {activeTab !== 'dashboard' && (
             <div className="search-bar">
@@ -121,20 +121,20 @@ function SystemAdminDashboard({ user, onLogout }) {
             </div>
           )}
         </header>
-
+ 
         {activeTab === 'dashboard' && <StatsGrid stats={stats} user={user} />}
-
+ 
         {globalError && (
           <div className="global-notification animate-fade">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <X size={20} onClick={() => setGlobalError(null)} style={{ cursor: 'pointer' }} />
+            <div className="notification-inner">
+              <X size={20} onClick={() => setGlobalError(null)} className="close-icon" />
               <p>{globalError}</p>
             </div>
           </div>
         )}
-
+ 
         <div className="glass-panel animate-fade">
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
+          <div className="panel-header-row">
             <h2>
               {activeTab === 'dashboard' ? 'Platform Analytics Overview' : 'Overview'}
             </h2>
@@ -144,28 +144,28 @@ function SystemAdminDashboard({ user, onLogout }) {
               </button>
             )}
           </div>
-
+ 
           {['mall-overview', 'store-overview'].includes(activeTab) && !loading && (
-            <div className="overview-stats-bar" style={{ display: 'flex', gap: '24px', marginBottom: '24px' }}>
-              <div className="stat-mini-card" style={{ background: 'var(--primary-light)', padding: '16px 24px', borderRadius: '16px', border: '1px solid var(--primary)', minWidth: '200px' }}>
-                <div style={{ fontSize: '10px', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>
+            <div className="overview-stats-bar">
+              <div className="stat-mini-card primary">
+                <div className="stat-mini-card-label">
                   Total {activeTab === 'mall-overview' ? 'Mall' : 'Store'} Admins
                 </div>
-                <div style={{ fontSize: '28px', fontWeight: '900', color: 'var(--primary)' }}>{items.length}</div>
+                <div className="stat-mini-card-value">{items.length}</div>
               </div>
-              <div className="stat-mini-card" style={{ background: 'white', padding: '16px 24px', borderRadius: '16px', border: '1px solid var(--border)', minWidth: '200px' }}>
-                <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              <div className="stat-mini-card muted">
+                <div className="stat-mini-card-label">
                   Total {activeTab === 'mall-overview' ? 'Malls' : 'Stores'} Managed
                 </div>
-                <div style={{ fontSize: '28px', fontWeight: '900', color: 'var(--primary)' }}>
+                <div className="stat-mini-card-value">
                   {items.reduce((acc, curr) => acc + (activeTab === 'mall-overview' ? (curr.malls?.length || 0) : (curr.stores?.length || 0)), 0)}
                 </div>
               </div>
             </div>
           )}
-
+ 
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '48px' }}>
+            <div className="loading-container">
               <div className="animate-pulse">Loading data...</div>
             </div>
           ) : activeTab === 'dashboard' ? (

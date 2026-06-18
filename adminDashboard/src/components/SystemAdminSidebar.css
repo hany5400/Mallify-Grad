@@ -44,8 +44,8 @@
   align-items: center;
   justify-content: center;
   color: white;
-  fontWeight: bold;
-  fontSize: 18px;
+  font-weight: bold;
+  font-size: 18px;
 }
 
 .profile-name {
@@ -93,3 +93,14 @@
 .sidebar-footer {
   padding: 24px 32px;
 }
+
+.sidebar-profile-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logout-btn {
+  width: 100%;
+}
+

@@ -60,128 +60,32 @@ function MallAdminRegisterPage() {
     }
   };
 
-  const bgStyle = {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '24px',
-    position: 'relative',
-    overflow: 'hidden'
-  };
-
-  const cardStyle = {
-    background: 'rgba(255, 255, 255, 0.95)',
-    backdropFilter: 'blur(24px)',
-    border: '1px solid rgba(255, 255, 255, 0.8)',
-    borderRadius: '28px',
-    padding: '48px',
-    width: '100%',
-    maxWidth: '620px',
-    boxShadow: '0 32px 64px -12px rgba(0,0,0,0.1)',
-    position: 'relative',
-    zIndex: 1
-  };
-
-  const inputStyle = {
-    width: '100%',
-    padding: '14px 18px',
-    borderRadius: '12px',
-    border: '1.5px solid rgba(0,0,0,0.1)',
-    background: '#f8fafc',
-    color: '#0f172a',
-    fontSize: '15px',
-    outline: 'none',
-    fontFamily: 'Outfit, sans-serif',
-    transition: 'border-color 0.2s',
-    fontWeight: '500'
-  };
-
-  const labelStyle = {
-    display: 'block',
-    color: '#475569',
-    fontSize: '13px',
-    fontWeight: '700',
-    marginBottom: '8px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px'
-  };
-
-  const fileBoxStyle = (hasFile) => ({
-    width: '100%',
-    aspectRatio: '3/2',
-    border: `2px dashed ${hasFile ? '#0ea5e9' : 'rgba(0,0,0,0.15)'}`,
-    borderRadius: '16px',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-    background: hasFile ? 'rgba(14,165,233,0.08)' : 'rgba(0,0,0,0.02)',
-    transition: 'all 0.3s ease',
-    overflow: 'hidden',
-    position: 'relative',
-    gap: '8px'
-  });
-
   return (
-    <div className="auth-bg-animated" style={bgStyle}>
-      <form className="animate-fade" style={cardStyle} onSubmit={handleSubmit}>
+    <div className="auth-container auth-bg-animated">
+      <form className="auth-card-wide animate-fade" onSubmit={handleSubmit}>
         <button 
           type="button" 
           onClick={() => navigate('/login')} 
-          style={{ 
-            background: 'none', 
-            border: 'none', 
-            color: '#64748b', 
-            cursor: 'pointer', 
-            fontSize: '13px', 
-            fontWeight: '600', 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '6px', 
-            marginBottom: '24px', 
-            padding: 0 
-          }}
+          className="auth-back-link"
         >
           ← Back to Login
         </button>
 
-        <div style={{ marginBottom: '32px' }}>
-          <div style={{ 
-            display: 'inline-flex', 
-            alignItems: 'center', 
-            gap: '8px', 
-            background: 'rgba(37,99,235,0.15)', 
-            border: '1px solid rgba(37,99,235,0.3)', 
-            borderRadius: '20px', 
-            padding: '6px 14px', 
-            marginBottom: '16px' 
-          }}>
-            <span style={{ 
-              fontSize: '11px', 
-              fontWeight: '800', 
-              textTransform: 'uppercase', 
-              letterSpacing: '1px', 
-              color: '#2563eb', 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '6px' 
-            }}>
+        <div className="register-header">
+          <div className="register-badge-wrapper">
+            <span className="register-badge">
               <Building2 size={14} /> Mall Admin Registration
             </span>
           </div>
-          <h2 style={{ color: '#0f172a', fontSize: '24px', fontWeight: '800', lineHeight: 1.2 }}>
-            Apply for Mall Admin Access
-          </h2>
-          <p style={{ color: '#475569', fontSize: '14px', marginTop: '8px' }}>Fill in your details and upload the required documents.</p>
+          <h2 className="register-title">Apply for Mall Admin Access</h2>
+          <p className="register-desc">Fill in your details and upload the required documents.</p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+        <div className="form-grid-2col">
           <div>
-            <label style={labelStyle}>Mall Name</label>
+            <label className="auth-label">Mall Name</label>
             <input 
-              style={inputStyle} 
+              className="auth-input" 
               placeholder="e.g. Mall of Arabia" 
               value={name} 
               onChange={e => setName(e.target.value)} 
@@ -189,9 +93,9 @@ function MallAdminRegisterPage() {
             />
           </div>
           <div>
-            <label style={labelStyle}>Email Address</label>
+            <label className="auth-label">Email Address</label>
             <input 
-              style={inputStyle} 
+              className="auth-input" 
               type="email" 
               placeholder="admin@example.com" 
               value={email} 
@@ -200,9 +104,9 @@ function MallAdminRegisterPage() {
             />
           </div>
           <div>
-            <label style={labelStyle}>Password</label>
+            <label className="auth-label">Password</label>
             <input 
-              style={inputStyle} 
+              className="auth-input" 
               type="password" 
               placeholder="••••••••" 
               value={password} 
@@ -211,9 +115,9 @@ function MallAdminRegisterPage() {
             />
           </div>
           <div>
-            <label style={labelStyle}>Confirm Password</label>
+            <label className="auth-label">Confirm Password</label>
             <input 
-              style={inputStyle} 
+              className="auth-input" 
               type="password" 
               placeholder="••••••••" 
               value={confirmPassword} 
@@ -223,9 +127,9 @@ function MallAdminRegisterPage() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+        <div className="file-upload-grid">
           <div>
-            <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '6px' }}><FileText size={16} /> Commercial License</label>
+            <label className="auth-label file-upload-label"><FileText size={16} /> Commercial License</label>
             <input 
               type="file" 
               ref={licenseRef} 
@@ -233,19 +137,21 @@ function MallAdminRegisterPage() {
               accept="image/*,.pdf" 
               onChange={handleFileChange(setCommercialLicense, setLicensePrev)} 
             />
-            <div style={fileBoxStyle(!!licensePrev)} onClick={() => licenseRef.current?.click()}>
+            <div className={`file-box ${licensePrev ? 'has-file' : ''}`} onClick={() => licenseRef.current?.click()}>
               {licensePrev ? (
-                <img src={licensePrev} alt="License" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', borderRadius: '14px', opacity: 0.85 }} />
+                <img src={licensePrev} alt="License" className="file-preview-img" />
               ) : (
                 <>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(37,99,235,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><FileText size={20} color="#2563eb" /></div>
-                  <p style={{ color: '#475569', fontSize: '12px', fontWeight: '600', textAlign: 'center' }}>Click to upload<br />Commercial License</p>
+                  <div className="file-upload-prompt-icon license-icon">
+                    <FileText size={20} color="#2563eb" />
+                  </div>
+                  <p className="file-upload-prompt-text">Click to upload<br />Commercial License</p>
                 </>
               )}
             </div>
           </div>
           <div>
-            <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '6px' }}><CreditCard size={16} /> ID Document</label>
+            <label className="auth-label file-upload-label"><CreditCard size={16} /> ID Document</label>
             <input 
               type="file" 
               ref={idDocRef} 
@@ -253,13 +159,15 @@ function MallAdminRegisterPage() {
               accept="image/*,.pdf" 
               onChange={handleFileChange(setIdentificationDoc, setIdDocPrev)} 
             />
-            <div style={fileBoxStyle(!!idDocPrev)} onClick={() => idDocRef.current?.click()}>
+            <div className={`file-box ${idDocPrev ? 'has-file' : ''}`} onClick={() => idDocRef.current?.click()}>
               {idDocPrev ? (
-                <img src={idDocPrev} alt="ID" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', borderRadius: '14px', opacity: 0.85 }} />
+                <img src={idDocPrev} alt="ID" className="file-preview-img" />
               ) : (
                 <>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(14,165,233,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CreditCard size={20} color="#0ea5e9" /></div>
-                  <p style={{ color: '#475569', fontSize: '12px', fontWeight: '600', textAlign: 'center' }}>Click to upload<br />Identification Document</p>
+                  <div className="file-upload-prompt-icon id-icon">
+                    <CreditCard size={20} color="#0ea5e9" />
+                  </div>
+                  <p className="file-upload-prompt-text">Click to upload<br />Identification Document</p>
                 </>
               )}
             </div>
@@ -267,19 +175,7 @@ function MallAdminRegisterPage() {
         </div>
 
         {err && (
-          <div style={{ 
-            background: 'rgba(239,68,68,0.1)', 
-            border: '1px solid rgba(239,68,68,0.3)', 
-            borderRadius: '12px', 
-            padding: '14px 18px', 
-            color: '#ef4444', 
-            fontSize: '14px', 
-            fontWeight: '600', 
-            marginBottom: '20px', 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '8px' 
-          }}>
+          <div className="auth-error-box">
             <X size={18} /> {err}
           </div>
         )}
@@ -287,20 +183,7 @@ function MallAdminRegisterPage() {
         <button 
           type="submit" 
           disabled={loading} 
-          style={{ 
-            width: '100%', 
-            padding: '16px', 
-            borderRadius: '14px', 
-            border: 'none', 
-            background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', 
-            color: 'white', 
-            fontSize: '16px', 
-            fontWeight: '800', 
-            cursor: loading ? 'not-allowed' : 'pointer', 
-            opacity: loading ? 0.7 : 1, 
-            boxShadow: 'rgba(37,99,235,0.35) 0px 8px 24px', 
-            transition: 'all 0.3s' 
-          }}
+          className="mall-btn-submit"
         >
           {loading ? 'Submitting...' : 'Submit Mall Admin Application'}
         </button>

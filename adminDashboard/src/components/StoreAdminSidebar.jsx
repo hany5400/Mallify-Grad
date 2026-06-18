@@ -11,7 +11,7 @@ function StoreAdminSidebar({ activeTab, setActiveTab, user, onLogout }) {
 
       {user && (
         <div className="sidebar-profile">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className="sidebar-profile-info">
             <div className="profile-avatar">
               {user.name?.charAt(0).toUpperCase()}
             </div>
@@ -42,7 +42,7 @@ function StoreAdminSidebar({ activeTab, setActiveTab, user, onLogout }) {
       </ul>
       
       <div className="sidebar-footer">
-        <button className="btn btn-outline" style={{ width: '100%' }} onClick={onLogout}>
+        <button className="btn btn-outline logout-btn" onClick={onLogout}>
           <LogOut size={18} /> Logout
         </button>
       </div>
