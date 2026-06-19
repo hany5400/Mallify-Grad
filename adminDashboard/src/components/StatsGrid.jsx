@@ -1,5 +1,6 @@
 import React from 'react';
 import { Users, Store, Package, MapPin, Plus, Check } from 'lucide-react';
+import './StatsGrid.css';
 
 function StatsGrid({ stats, user }) {
   const userRole = user?.role || (user?.admin_type === 'mall' ? 'mall_admin' : (user?.admin_type === 'store' ? 'store_admin' : (user?.admin_type === 'system' ? 'system_admin' : 'user')));
