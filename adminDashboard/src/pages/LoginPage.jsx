@@ -64,7 +64,7 @@ function LoginPage({ onLoginSuccess }) {
         </div>
 
         <form onSubmit={handleLogin}>
-          <div className="form-group">
+          <div className="form-group-spaced">
             <label className="auth-label">Email Address</label>
             <input 
               id="login-email" 

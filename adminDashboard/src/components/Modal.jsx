@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Shield, Plus, Store, Package, Tag, Search, CheckCircle, Shirt } from 'lucide-react';
 import api, { API_BASE } from '../services/api.js';
+import './Modal.css';
 
 function Modal({ tab, item, onClose, refresh, user }) {
   const [formData, setFormData] = useState(item || {});

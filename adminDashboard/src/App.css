@@ -311,143 +311,11 @@ body {
   transform: scale(1.05);
 }
 
-.form-group {
-  margin-bottom: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.form-group label {
-  display: block;
-  font-weight: 700;
-  font-size: 14px;
-  color: var(--text);
-  letter-spacing: 0.3px;
-}
-
-.form-group input,
-.form-group select {
-  width: 100%;
-  padding: 16px 20px;
-  border-radius: 14px;
-  border: 2px solid #F1F5F9;
-  background: #F8FAFC;
-  outline: none;
-  font-size: 15px;
-  font-weight: 500;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  color: var(--text);
-}
-
-.form-group input:hover {
-  border-color: #E2E8F0;
-  background: #F1F5F9;
-}
-
-.form-group input:focus {
-  border-color: var(--primary);
-  background: var(--surface);
-  box-shadow: 0 0 0 4px var(--primary-light);
-  transform: translateY(-1px);
-}
-
-/* Custom File Upload Box */
-.file-upload-box {
-  width: 100%;
-  aspect-ratio: 16/9;
-  border: 3px dashed #CBD5E1;
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background: #F8FAFC;
-  overflow: hidden;
-  position: relative;
-  gap: 12px;
-}
-
-.file-upload-box:hover {
-  border-color: var(--primary);
-  background: var(--primary-light);
-  transform: scale(1.01);
-}
-
-.file-upload-box .plus-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--surface);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--primary);
-  box-shadow: var(--shadow-md);
-  transition: all 0.3s ease;
-}
-
-.file-upload-box:hover .plus-icon {
-  transform: rotate(90deg) scale(1.1);
-}
-
-.file-upload-box p {
-  font-weight: 600;
-  color: var(--text-muted);
-  font-size: 14px;
-}
-
-.image-preview {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 1;
-}
-
-.preview-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 2;
-  font-weight: 700;
-}
-
-.file-upload-box:hover .preview-overlay {
-  opacity: 1;
-}
-
 /* Login specific tweaks to make it "pop" */
 .login-card {
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-}
-
-/* Modals */
-.modal-overlay {
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(12px);
-}
-
-.modal-content {
-  padding: 48px;
-  border-radius: 32px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Special Scrollbar */
@@ -477,31 +345,6 @@ body {
   border-radius: 6px;
   font-size: 14px;
   color: var(--primary);
-}
-
-/* Modal Error Styles */
-.modal-error {
-  background: #fee2e2;
-  color: #dc2626;
-  padding: 16px 20px;
-  border-radius: 16px;
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border: 1px solid #fecaca;
-  font-weight: 600;
-  font-size: 14px;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.08);
-}
-
-.modal-error svg {
-  flex-shrink: 0;
-  transition: transform 0.2s ease;
-}
-
-.modal-error svg:hover {
-  transform: rotate(90deg) scale(1.1);
 }
 
 /* Global Notification Styles */
@@ -613,53 +456,3 @@ body {
   background: #f8fafc;
 }
 
-.target-selection-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background: white;
-  border-radius: 14px;
-  border: 1px solid #edf2f7;
-  transition: all 0.2s;
-}
-
-.target-selection-card:hover {
-  border-color: var(--primary-light);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-}
-
-.dropdown-search-list {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-  border: 1px solid var(--border);
-  z-index: 1000;
-  margin-top: 5px;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.dropdown-item {
-  padding: 10px 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  transition: background 0.2s;
-}
-
-.dropdown-item:hover {
-  background: #f8fafc;
-}
-
-.dropdown-item.selected {
-  background: var(--primary-light);
-  color: var(--primary);
-  font-weight: 700;
-}

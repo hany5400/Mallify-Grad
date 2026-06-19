@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FileText, CreditCard, X, Store, Search, Building2 } from 'lucide-react';
 import { registerStore, getMalls } from '../services/api';
 import './StoreAdminRegisterPage.css';
+import '../components/Modal.css';
 
 function StoreAdminRegisterPage() {
   const [name, setName] = useState('');

@@ -7,6 +7,7 @@ import DataRenderer from '../components/DataRenderer';
 import Modal from '../components/Modal';
 import api, { API_BASE, getStats, getStores, getProducts, getProductCategories, getDiscounts, createStoreMallRequest } from '../services/api';
 import './StoreAdminDashboard.css';
+import '../components/Modal.css';
 
 function StoreAdminDashboard({ user, onLogout }) {
   const [activeTab, setActiveTab] = useState('dashboard');
