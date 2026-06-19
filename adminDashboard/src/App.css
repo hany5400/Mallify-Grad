@@ -311,27 +311,6 @@ body {
   transform: scale(1.05);
 }
 
-/* Table */
-.table-container {
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 8px;
-}
-
-th {
-  text-align: left;
-  padding: 16px 24px;
-  color: var(--text-muted);
-  font-weight: 700;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
 .form-group {
   margin-bottom: 24px;
   display: flex;
@@ -458,54 +437,6 @@ th {
   backdrop-filter: blur(20px);
 }
 
-td {
-  padding: 20px 24px;
-  background: #f9fafb;
-  transition: all 0.2s ease;
-}
-
-td:first-child {
-  border-radius: 16px 0 0 16px;
-}
-
-td:last-child {
-  border-radius: 0 16px 16px 0;
-}
-
-tr:hover td {
-  background: #f1f5f9;
-  transform: scale(1.002);
-}
-
-/* Badges */
-.status-badge {
-  padding: 8px 16px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.status-badge::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-.status-pending {
-  background: #fef3c7;
-  color: #d97706;
-}
-
-.status-approved {
-  background: #dcfce7;
-  color: #16a34a;
-}
-
 /* Modals */
 .modal-overlay {
   background: rgba(15, 23, 42, 0.6);
@@ -546,48 +477,6 @@ tr:hover td {
   border-radius: 6px;
   font-size: 14px;
   color: var(--primary);
-}
-
-/* Document Thumbnails */
-.doc-thumbnails {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.doc-thumb {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  object-fit: cover;
-  border: 2px solid var(--primary-light);
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--shadow-sm);
-  background: white;
-}
-
-.doc-thumb:hover {
-  transform: scale(1.15) translateY(-4px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--primary);
-  z-index: 10;
-}
-
-.doc-link {
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.doc-label {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  letter-spacing: 0.5px;
 }
 
 /* Modal Error Styles */
@@ -634,39 +523,6 @@ tr:hover td {
 .global-notification p {
   font-size: 16px;
   letter-spacing: -0.2px;
-}
-
-/* Table Visual Improvements */
-.table-img-container {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.table-img-container:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.table-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.store-badge {
-  background: var(--primary-light);
-  color: var(--primary);
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
 }
 
 /* Floating icons animation for auth screen */

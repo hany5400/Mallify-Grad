@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Store, Package, Trash2, Image as ImageIcon, Pencil, Eye, X, Check, CheckCircle, MapPin, Tag, Shield, UserCheck, FileText, UserPlus, Users } from 'lucide-react';
 import api, { API_BASE } from '../services/api.js';
+import './DataRenderer.css';
 
 function DataRenderer({ tab, items, setItems, user, refresh, onEdit, onAssignmentRequest, setGlobalError }) {
   const userRole = user?.role || (user?.admin_type === 'mall' ? 'mall_admin' : (user?.admin_type === 'store' ? 'store_admin' : (user?.admin_type === 'system' ? 'system_admin' : 'user')));
@@ -199,13 +200,13 @@ function DataRenderer({ tab, items, setItems, user, refresh, onEdit, onAssignmen
                                 </div>
                               </summary>
                               <div style={{ padding: '0 16px 16px', borderTop: '1px solid var(--border)', background: 'rgba(0,0,0,0.02)' }}>
-                                <div style={{ paddingTop: '16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '10px' }}>
+                                <div style={{ paddingTop: '16px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                                   {(s.products || []).length > 0 ? s.products.map(p => (
-                                    <div key={p.product_id} style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--bg)', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)' }}>
-                                      <Package size={14} style={{ opacity: 0.5 }} />
-                                      <div style={{ fontSize: '12px', fontWeight: '600' }}>{p.product_name}</div>
+                                    <div key={p.product_id} className="product-tag" style={{ background: 'var(--bg)', padding: '6px 12px', borderRadius: '20px', fontSize: '12px', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                                      {p.image_url && <img src={`${API_BASE}/${p.image_url}`} style={{ width: '20px', height: '20px', borderRadius: '4px', objectFit: 'cover' }} />}
+                                      <span style={{ fontWeight: '500' }}>{p.product_name}</span>
                                     </div>
-                                  )) : <div style={{ fontSize: '12px', opacity: 0.5 }}>No products listed for this store.</div>}
+                                  )) : <div style={{ fontSize: '12px', opacity: 0.5, padding: '8px' }}>No products listed for this store.</div>}
                                 </div>
                               </div>
                             </details>
