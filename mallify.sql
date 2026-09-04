@@ -3,7 +3,11 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
+<<<<<<< HEAD
 -- Generation Time: May 26, 2026 at 11:43 AM
+=======
+-- Generation Time: Sep 04, 2026 at 05:58 PM
+>>>>>>> 00cc060601b6ff2a88cbdbf50849d862c36a7f53
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -47,7 +51,12 @@ INSERT INTO `discount` (`discount_id`, `title`, `expiry_date`, `amount`, `store_
 (8, 'last discount yuom 9', '2026-05-09', '20', 1, '2026-01-13 04:39:40'),
 (10, 'discount yuom 10', '2026-05-10', '20', 1, '2026-05-08 22:02:11'),
 (14, 'summer discount', '2026-05-18', '30', 1, '2026-05-17 03:58:57'),
+<<<<<<< HEAD
 (15, 'jeans discount', '2026-05-25', '20', 1, '2026-05-23 18:38:45');
+=======
+(15, 'jeans discount', '2026-05-25', '20', 1, '2026-05-23 18:38:45'),
+(16, 'jeans offer', '2026-09-06', '20', 1, '2026-09-04 15:25:43');
+>>>>>>> 00cc060601b6ff2a88cbdbf50849d862c36a7f53
 
 -- --------------------------------------------------------
 
@@ -154,7 +163,12 @@ INSERT INTO `payment` (`payment_id`, `subscription_id`, `payment_amount`, `payme
 (5, 3, 499.00, 'Orange Cash', 'completed', '2026-05-10 02:52:07'),
 (6, 3, 499.00, 'Orange Cash', 'completed', '2026-05-10 03:00:41'),
 (7, 8, 2500.00, 'Visa Card', 'completed', '2026-05-25 19:00:28'),
+<<<<<<< HEAD
 (8, 9, 250.00, 'Orange Cash', 'completed', '2026-05-25 19:59:43');
+=======
+(8, 9, 250.00, 'Orange Cash', 'completed', '2026-05-25 19:59:43'),
+(9, 2, 250.00, 'Visa Card', 'completed', '2026-09-04 15:14:10');
+>>>>>>> 00cc060601b6ff2a88cbdbf50849d862c36a7f53
 
 -- --------------------------------------------------------
 
@@ -246,7 +260,11 @@ INSERT INTO `product` (`product_id`, `product_name`, `store_id`, `image_url`) VA
 (70, 'Sneakers', 66, 'uploads/products/designer_sneakers.png'),
 (71, 'Cap', 67, 'uploads/products/fashion_category.png'),
 (72, 'Shirt', 68, 'uploads/products/fashion_category.png'),
+<<<<<<< HEAD
 (73, 'Bag', 69, 'uploads/categories/fashion_category.png');
+=======
+(73, 'Bag', 69, 'uploads/products/fashion_category.png');
+>>>>>>> 00cc060601b6ff2a88cbdbf50849d862c36a7f53
 
 -- --------------------------------------------------------
 
@@ -836,7 +854,11 @@ CREATE TABLE `subscriptions` (
 --
 
 INSERT INTO `subscriptions` (`subscription_id`, `user_id`, `plan_type`, `status`, `start_date`, `end_date`, `search_count`) VALUES
+<<<<<<< HEAD
 (2, 11, 'premium', 'active', '2026-05-10', '2026-06-10', 5),
+=======
+(2, 11, 'premium', 'active', '2026-09-04', '2026-10-04', 5),
+>>>>>>> 00cc060601b6ff2a88cbdbf50849d862c36a7f53
 (3, 84, 'free', 'active', '2026-05-10', '2026-06-10', 2),
 (4, 94, 'free', 'active', '2026-05-24', NULL, 0),
 (5, 95, 'free', 'active', '2026-05-24', NULL, 0),
@@ -1158,7 +1180,11 @@ ALTER TABLE `user_request_storage`
 -- AUTO_INCREMENT for table `discount`
 --
 ALTER TABLE `discount`
+<<<<<<< HEAD
   MODIFY `discount_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+=======
+  MODIFY `discount_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+>>>>>>> 00cc060601b6ff2a88cbdbf50849d862c36a7f53
 
 --
 -- AUTO_INCREMENT for table `discount_target`
@@ -1182,7 +1208,11 @@ ALTER TABLE `mall_admin_register`
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
+<<<<<<< HEAD
   MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+=======
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+>>>>>>> 00cc060601b6ff2a88cbdbf50849d862c36a7f53
 
 --
 -- AUTO_INCREMENT for table `product`
